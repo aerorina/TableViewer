@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+    <servlet>
+        <servlet-name>XlsViewerService</servlet-name>
+        <servlet-class>ru.spb.nicetu.tableviewer.server.XlsViewerServiceImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>XlsViewerService</servlet-name>
+        <url-pattern>/tableviewer/xlsviewer_service</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>XlsUploadService</servlet-name>
+        <servlet-class>ru.spb.nicetu.tableviewer.server.XlsUploadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>XlsUploadService</servlet-name>
+        <url-pattern>/tableviewer/xlsUpload</url-pattern>
+    </servlet-mapping>
+
+
+
+
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>tableviewer.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
