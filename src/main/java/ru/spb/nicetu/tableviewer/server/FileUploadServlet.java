@@ -1,108 +1,98 @@
 package ru.spb.nicetu.tableviewer.server;
 
-import com.google.gwt.core.client.GWT;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.persistence.EntityManager;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
- * сервлет загрузки файлов пользователем на сервер
- * и скачка с сервера
- *
- * @author rkushnerev
+ * @author rlapin
  */
 
-@WebServlet(name = "FileUploadServlet", urlPatterns = {"/tableviewer/xlsupload"})
-@MultipartConfig
 public class FileUploadServlet extends HttpServlet {
-    private final static Logger LOGGER =
-            Logger.getLogger(FileUploadServlet.class.getCanonicalName());
 
-    private String getFileName(final Part part) {
-        final String partHeader = part.getHeader("content-disposition");
-        LOGGER.log(Level.INFO, "Part Header = {0}", partHeader);
-        for (String content : part.getHeader("content-disposition").split(";")) {
-            if (content.trim().startsWith("filename")) {
-                return content.substring(
-                        content.indexOf('=') + 1).trim().replace("\"", "");
-            }
-        }
-        return null;
+    private boolean isMultipart;
+    private String filePath;
+    private final static int MAX_FILE_SIZE = 50 * 1024;
+    private final static int MAX_MEM_SIZE = 4 * 1024;
+    private File file;
+
+    public void init() {
+        // Get the file location where it would be stored.
+        filePath =
+                getServletContext().getInitParameter("file-upload");
     }
 
-    protected void processRequest(HttpServletRequest request,
-                                  HttpServletResponse response)
+    public void doPost(HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        // Check that we have a file upload request
+        isMultipart = ServletFileUpload.isMultipartContent(request);
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        if (!isMultipart) {
+            return;
+        }
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        // maximum size that will be stored in memory
+        factory.setSizeThreshold(MAX_MEM_SIZE);
+        // Location to save data that is larger than maxMemSize.
+        factory.setRepository(new File(getServletContext().getInitParameter("temp-file-upload")));
 
-        // Create path components to save the file
-        final String path = request.getParameter("destination");
-        final Part filePart = request.getPart("file");
-        final String fileName = getFileName(filePart);
-
-        OutputStream out = null;
-        InputStream filecontent = null;
-        final PrintWriter writer = response.getWriter();
+        // Create a new file upload handler
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        // maximum file size to be uploaded.
+        upload.setSizeMax(MAX_FILE_SIZE);
 
         try {
-            out = new FileOutputStream(new File(path + File.separator
-                    + fileName));
-            filecontent = filePart.getInputStream();
+            // Parse the request to get file items.
+            List fileItems = upload.parseRequest(request);
 
-            int read = 0;
-            final byte[] bytes = new byte[1024];
+            // Process the uploaded file items
+            Iterator i = fileItems.iterator();
 
-            while ((read = filecontent.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-            writer.println("New file " + fileName + " created at " + path);
-            LOGGER.log(Level.INFO, "File{0}being uploaded to {1}",
-                    new Object[]{fileName, path});
-        } catch (FileNotFoundException fne) {
-            writer.println("You either did not specify a file to upload or are "
-                    + "trying to upload a file to a protected or nonexistent "
-                    + "location.");
-            writer.println("<br/> ERROR: " + fne.getMessage());
 
-            LOGGER.log(Level.SEVERE, "Problems during file upload. Error: {0}",
-                    new Object[]{fne.getMessage()});
-        } finally {
-            if (out != null) {
-                out.close();
+            while (i.hasNext()) {
+                FileItem fi = (FileItem) i.next();
+                if (!fi.isFormField()) {
+                    // Get the uploaded file parameters
+                    String fieldName = fi.getFieldName();
+                    String fileName = fi.getName();
+                    String contentType = fi.getContentType();
+                    boolean isInMemory = fi.isInMemory();
+                    long sizeInBytes = fi.getSize();
+                    // Write the file
+
+                    if (fileName.lastIndexOf("\\") >= 0) {
+                        file = new File(filePath +
+                                fileName.substring(fileName.lastIndexOf("\\")));
+                    } else {
+                        file = new File(filePath +
+                                fileName.substring(fileName.lastIndexOf("\\") + 1));
+                    }
+                    fi.write(file);
+                    out.print(file.getPath());
+                }
             }
-            if (filecontent != null) {
-                filecontent.close();
-            }
-            if (writer != null) {
-                writer.close();
-            }
+
+        } catch (Exception ex) {
+            System.out.println(ex);
         }
     }
 
+    public void doGet(HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
 
+        throw new ServletException("GET method used with " +
+                getClass().getName() + ": POST method required.");
+    }
 }

@@ -10,7 +10,7 @@
   <!-- any one of the following lines.                            -->
 
 
-  <inherits name="gwtupload.GWTUpload"/>
+
   <inherits name="com.google.gwt.query.Query"/>
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
@@ -19,7 +19,7 @@
   <!-- Specify the app entry point class.                         -->
   <entry-point class='ru.spb.nicetu.tableviewer.client.TableViewer'/>
   <servlet path='/xlsviewer_service' class='ru.spb.nicetu.tableviewer.server.XlsViewerServiceImpl'/>
-  <servlet path='/xlsUpload' class='ru.spb.nicetu.tableviewer.server.XlsUploadServlet'/>
+  <servlet path='/upload' class='ru.spb.nicetu.tableviewer.server.FileUploadServlet'/>
   <!-- Specify the paths for translatable code                    -->
 
 </module>

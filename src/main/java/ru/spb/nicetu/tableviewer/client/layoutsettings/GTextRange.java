@@ -15,6 +15,7 @@ public class GTextRange extends Composite {
 
     public GTextRange() {
         HorizontalPanel textPanel = new HorizontalPanel();
+        textPanel.setStyleName("gwt-rangeTextLane");
         endBox = new IntegerBox();
         startBox = new IntegerBox();
         setupWidget(endBox);

@@ -11,14 +11,27 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>XlsUploadService</servlet-name>
-        <servlet-class>ru.spb.nicetu.tableviewer.server.XlsUploadServlet</servlet-class>
+        <servlet-name>FileUploadServlet</servlet-name>
+        <servlet-class>ru.spb.nicetu.tableviewer.server.FileUploadServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>XlsUploadService</servlet-name>
-        <url-pattern>/tableviewer/xlsUpload</url-pattern>
+        <servlet-name>FileUploadServlet</servlet-name>
+        <url-pattern>/tableviewer/upload</url-pattern>
     </servlet-mapping>
-
+    <context-param>
+        <description>Location to store uploaded file</description>
+        <param-name>file-upload</param-name>
+        <param-value>
+            /tmp/
+        </param-value>
+    </context-param>
+    <context-param>
+        <description>Temp folder</description>
+        <param-name>temp-file-upload</param-name>
+        <param-value>
+            /tmp/
+        </param-value>
+    </context-param>
 
 
 

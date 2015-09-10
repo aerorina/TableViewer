@@ -16,12 +16,25 @@
 package ru.spb.nicetu.tableviewer.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
-import gwtupload.client.*;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import ru.spb.nicetu.tableviewer.client.layoutsettings.LayoutSettingsModel;
 import ru.spb.nicetu.tableviewer.client.layoutsettings.LayoutSettingsPanel;
+import ru.spb.nicetu.tableviewer.client.resources.Resources;
 
 /**
  * Начальная точка приложения
@@ -36,9 +49,11 @@ public class TableViewer implements EntryPoint {
     /**
      * Элемент, куда создается таблица
      */
+    private String filePath;
+    private FileUpload fileUpload;
     final HTML tableHTML = new HTML();
     TabPanel tabPanel = new TabPanel();
-    final TextBox filePath = new TextBox();
+
     final TextBox fileNameBox = new TextBox();
     public static final String[] COLUMN_NAMES = new String[]{"Наименование","Дата начала","Дата окончания","Время начала","Время окончания",
     "Продолжительность (час)","Отвественное подразделение (наименование)","Ответственное лицо (ФИО)","Примечание"};
@@ -63,43 +78,20 @@ public class TableViewer implements EntryPoint {
         fileNameBox.setWidth("200px");
         fileNameBox.setEnabled(false);
         hpFile.add(fileNameBox);
+        final FormPanel formPanel = createUploadForm();
 
-        final UploadButton uploadButton = new UploadButton(16,16);
-        final SingleUploader uploader = new SingleUploader(IFileInput.FileInputType.CUSTOM.with(uploadButton), new ModalUploadStatus());
-        uploader.setServletPath("tableviewer/xlsUpload");
-        uploader.setAutoSubmit(true);
-        uploader.addOnChangeUploadHandler(new IUploader.OnChangeUploaderHandler() {
-            public void onChange(IUploader iUploader) {
-                String filePathStr = iUploader.getFileInput().getFilename();
-                if (!filePathStr.toLowerCase().endsWith("xls") && !filePathStr.toLowerCase().endsWith("xlsx") &&
-                        !filePathStr.toLowerCase().endsWith("ods")) {
-                    Window.alert("Загруженный файл не формата xls/xlsx/ods!");
-                    uploader.cancel();
-                    actionLabel.setStyleName("errorLabel");
-                    actionLabel.setHTML("Ошибка загрузки файла.");
-                }
+
+        Image image = new Image(Resources.INSTANCE.imgUpload());
+        image.setSize("24px","24px");
+        image.addClickHandler(new ClickHandler() {
+            @Override public void onClick(ClickEvent event) {
+                fileUpload.click();
             }
         });
-        uploader.addOnStatusChangedHandler(new IUploader.OnStatusChangedHandler() {
-            public void onStatusChanged(IUploader uploader) {
-                tableHTML.setHTML("");
-                tabPanel.getTabBar().setTabText(0, "");
-                actionLabel.setStyleName("processLabel");
-                if(layoutSettingsPanel!=null) {
-                    mainPanel.remove(layoutSettingsPanel);
-                }
-                actionLabel.setHTML("Начинаем загрузку файла");
-                if (uploader.getStatus() == IUploadStatus.Status.SUCCESS) {
-                    IUploader.UploadedInfo info = uploader.getServerInfo();
-                    fileNameBox.setText(info.name);
-                    filePath.setText(info.message);
-                    createHTMLTable();
-                }
-            }
-        });
-        hpFile.add(uploader);
         hp.add(hpFile);
-
+        hp.add(image);
+        formPanel.setVisible(false);
+        leftPanel.add(formPanel);
         leftPanel.add(hp);
         leftPanel.add(actionLabel);
         leftPanel.add(scrollPanel);
@@ -108,13 +100,67 @@ public class TableViewer implements EntryPoint {
 
         RootPanel.get().add(mainPanel);
     }
+    private FormPanel createUploadForm() {
+        final FormPanel formPanel = new FormPanel();
+        formPanel.setMethod(FormPanel.METHOD_POST);
+        formPanel.setAction("/tableviewer/upload");
+        formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
+        fileUpload = new FileUpload();
+        fileUpload.setTitle("Выберите файл");
 
+        fileUpload.setName("file-upload");
+        fileUpload.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                formPanel.submit();
+            }
+        });
+
+
+        // Add an event handler to the form.
+        formPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+            public void onSubmit(FormPanel.SubmitEvent event) {
+                // This event is fired just before the form is submitted. We can take
+                // this opportunity to perform validation.
+                String filePathStr = fileUpload.getFilename();
+                if (!filePathStr.toLowerCase().endsWith("xls") && !filePathStr.toLowerCase().endsWith("xlsx") &&
+                        !filePathStr.toLowerCase().endsWith("ods")) {
+                    event.cancel();
+                    actionLabel.setStyleName("errorLabel");
+                    actionLabel.setHTML("Ошибка загрузки файла.");
+                }
+            }
+        });
+        formPanel.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+            public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
+                // When the form submission is successfully completed, this event is
+                // fired. Assuming the service returned a response of type text/html,
+                // we can get the result text here (see the FormPanel documentation for
+                // further explanation).
+                tableHTML.setHTML("");
+
+                actionLabel.setStyleName("processLabel");
+                if (layoutSettingsPanel != null) {
+                    mainPanel.remove(layoutSettingsPanel);
+                }
+                filePath = event.getResults();
+                actionLabel.setHTML("Начинаем загрузку файла");
+                String filename = fileUpload.getFilename();
+                filename = filename.substring(filename.lastIndexOf("\\")+1);
+                fileNameBox.setText(filename);
+                createHTMLTable();
+
+            }
+        });
+        formPanel.add(fileUpload);
+        return formPanel;
+    }
     private void createHTMLTable() {
-        String filePathStr = filePath.getValue();
+
 
         actionLabel.setStyleName("processLabel");
         actionLabel.setHTML("Идет построение формы...");
-        XlsViewerService.App.getInstance().buildHtml(filePathStr, false, new AsyncCallback<String>() {
+        XlsViewerService.App.getInstance().buildHtml(filePath, false, new AsyncCallback<String>() {
             public void onFailure(Throwable caught) {
                 actionLabel.setStyleName("errorLabel");
                 actionLabel.setHTML("Ошибка при построении формы: " + (caught != null ? caught.getMessage() : "смотрите журнал работы сервера"));
