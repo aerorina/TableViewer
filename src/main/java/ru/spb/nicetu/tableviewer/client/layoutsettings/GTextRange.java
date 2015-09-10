@@ -1,12 +1,9 @@
 package ru.spb.nicetu.tableviewer.client.layoutsettings;
 
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
-
-import java.text.ParseException;
 
 /**
  * Компонент для задания диапазона значений
@@ -18,7 +15,6 @@ public class GTextRange extends Composite {
 
     public GTextRange() {
         HorizontalPanel textPanel = new HorizontalPanel();
-        textPanel.setStyleName("gwt-rangeTextLane");
         endBox = new IntegerBox();
         startBox = new IntegerBox();
         setupWidget(endBox);

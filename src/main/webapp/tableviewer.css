@@ -51,17 +51,6 @@
 
 
 
-.gwt-rangeTextLane {
-    margin-left: 5px;
-    width:600px;
-}
-.gwt-rangeTextLane input[type=number]{
-    background: #70d8ff;
-
-}
-.gwt-rangeTextLane .gwt-Label{
-    margin: 5px;
-}
 .gwt-Button {
     outline: none;
     background: #70d8ff;
