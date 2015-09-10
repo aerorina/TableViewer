@@ -1,5 +1,12 @@
 package ru.spb.nicetu.tableviewer.client.layoutsettings;
 
+import static com.google.gwt.query.client.GQuery.$;
+
+
+
+
+
+
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,13 +18,23 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.query.client.Function;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
-import ru.spb.nicetu.tableviewer.client.resources.Resources;
-
 import java.util.Map;
-
-import static com.google.gwt.query.client.GQuery.$;
+import ru.spb.nicetu.tableviewer.client.resources.Resources;
 
 /**
  * Компонент для настройки макета таблицы
@@ -203,7 +220,6 @@ public class LayoutSettingsPanel extends Composite {
             }
             tabPanel.selectTab(1);
 
-//            RootPanel.get().add(html);
         } else {
             AlertMessageBox messageBox = new AlertMessageBox("Ошибка", "Диапазон строк для обработки задан некорректно");
             messageBox.show();
@@ -222,6 +238,7 @@ public class LayoutSettingsPanel extends Composite {
         final String []result = new String[1];
         row.children("td").each(new Function() {
             int val = 0;
+
             @Override
             public void f() {
                 GQuery col = $(this);
@@ -235,7 +252,6 @@ public class LayoutSettingsPanel extends Composite {
                         result[0] = col.html();
                     }
                 }
-
 
             }
         });
@@ -301,7 +317,7 @@ public class LayoutSettingsPanel extends Composite {
                 int index = $(this).index();
                 selectColumn(index);
                 $(".gwt-LayoutSettingsPanel .gwt-ListBox").eq(outputColumn).prop("selectedIndex", "" + index);
-                model.putLinkValue(outputColumn, index);
+
                 return true;
             }
         });
@@ -324,9 +340,10 @@ public class LayoutSettingsPanel extends Composite {
      * @param index индекс колонки
      */
     private void selectColumn(final int index) {
+
         $(TABLE_CLASS + " tr td").removeClass("selcolumn");
         if (index != 0) {
-
+            model.putLinkValue(outputColumn, index);
             $(TABLE_CLASS + " tr").each(new Function() {
                 int val;
 
@@ -354,6 +371,8 @@ public class LayoutSettingsPanel extends Composite {
 
                 }
             });
+        }else{
+            model.removeLinkValue(outputColumn);
         }
     }
 

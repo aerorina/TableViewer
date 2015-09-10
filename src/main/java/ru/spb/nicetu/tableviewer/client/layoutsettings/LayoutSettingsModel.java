@@ -65,4 +65,12 @@ public class LayoutSettingsModel {
     public Map<Integer,Integer> getLinks() {
         return links;
     }
+
+    /**
+     * Удалить значение связи
+     * @param outputColumn колонка выходной таблицы
+     */
+    public void removeLinkValue(int outputColumn) {
+        links.remove(outputColumn);
+    }
 }
