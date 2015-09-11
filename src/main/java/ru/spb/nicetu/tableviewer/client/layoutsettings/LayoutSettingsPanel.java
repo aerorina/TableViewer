@@ -214,7 +214,9 @@ public class LayoutSettingsPanel extends Composite {
             stringBuilder.append("</table>");
             html.setHTML(stringBuilder.toString());
 
-            tabPanel.remove(1);
+            if (tabPanel.getWidgetCount() == 2) {
+                tabPanel.remove(1);
+            }
             if (tabPanel.getWidgetCount() == 1) {
                 tabPanel.add(html, "Выборка");
             }

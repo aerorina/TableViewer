@@ -64,9 +64,8 @@ public class TableViewer implements EntryPoint {
         mainPanel = new HorizontalPanel();
         VerticalPanel leftPanel = new VerticalPanel();
         final HorizontalPanel hp = new HorizontalPanel();
-        tabPanel.add(tableHTML, "");
-        tabPanel.add(new Label(""), "");
-        tabPanel.selectTab(0);
+        tabPanel.add(tableHTML, "Файл");
+        tabPanel.setVisible(false);
         final ScrollPanel scrollPanel = new ScrollPanel(tabPanel);
 //        final ScrollPanel scrollPanel = new ScrollPanel(tableHTML);
         scrollPanel.setHeight("600px");
@@ -138,6 +137,7 @@ public class TableViewer implements EntryPoint {
                 // we can get the result text here (see the FormPanel documentation for
                 // further explanation).
                 tableHTML.setHTML("");
+                tabPanel.setVisible(false);
 
                 actionLabel.setStyleName("processLabel");
                 if (layoutSettingsPanel != null) {
@@ -175,7 +175,8 @@ public class TableViewer implements EntryPoint {
                     actionLabel.setStyleName("successLabel");
                     actionLabel.setHTML("Форма построена");
                     tableHTML.setHTML(result);
-                    tabPanel.getTabBar().setTabText(0, "Файл");
+                    tabPanel.selectTab(0);
+                    tabPanel.setVisible(true);
 
                     layoutSettingsPanel = new LayoutSettingsPanel(new LayoutSettingsModel(COLUMN_NAMES), tabPanel, "Укажите столбцы с данными для загрузки");
                     mainPanel.add(layoutSettingsPanel);
