@@ -1,6 +1,6 @@
 .gwt-PrototypingPanel{
     margin-left: 10px;
-    width: 600px;
+    width: 648px;
     margin-bottom: 5px;
     border: solid 1px #7de2ff;
     background: #f2f2f2;
@@ -19,6 +19,7 @@
     color: #3a3a4d;
     margin-bottom: 5px;
 }
+
 .gwt-PrototypingPanel .gwt-ListBox{
     background: #70d8ff;
 }
@@ -27,14 +28,12 @@
     margin-bottom: 5px;
     margin-left: 5px;
     margin-right: 5px;
-    outline: none;
+    outline: none !important;
 }
 .gwt-PrototypingPanel .focusPanel:hover{
     background: #61b8ff;
 }
-.gwt-PrototypingPanel .columnLane{
-    outline: none !important;
-}
+
 .errorLabel{
     font-weight: bold;
     color: red;
@@ -116,10 +115,5 @@
     outline: none
 }
 
-.gwt-PrototypingPanel .addButton {
-    margin-right:-30px;
-}
-.gwt-PrototypingPanel .deleteButton {
-    margin-right:-60px;
-}
+
 

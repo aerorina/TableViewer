@@ -8,7 +8,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -36,6 +35,10 @@ public class PrototypeLane extends Composite {
      */
     public static final int ENG_ALPH_SIZE = 25;
     /**
+     * Максимальное количество элементов для выбора колонок
+     */
+    public static final int MAX_LIST_BOX_COUNT = 4;
+    /**
      * Модель компонента
      */
     private final PrototypeLaneModel model;
@@ -47,11 +50,15 @@ public class PrototypeLane extends Composite {
      * Список элементов для выбора колонок
      */
     private List<ListBox> listBoxes = new ArrayList<ListBox>();
+    /**
+     * Панель на которой лежат элементы для выбора колонок
+     */
     private HorizontalPanel listBoxPanel = new HorizontalPanel();
     /**
      * Кнопка для удаления listbox
      */
     private PushButton delBtn;
+    private PushButton addBtn;
 
     public PrototypeLane(PrototypeLaneModel model) {
         this.model = model;
@@ -95,7 +102,8 @@ public class PrototypeLane extends Composite {
         columnLane.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         columnLane.add(listBoxPanel);
         lane.add(columnLane);
-        lane.add(createAddBtn());
+        addBtn = createAddBtn();
+        lane.add(addBtn);
         delBtn = createDelBtn();
         lane.add(delBtn);
         initWidget(lane);
@@ -103,6 +111,7 @@ public class PrototypeLane extends Composite {
 
     /**
      * Создает элемент управления для выбора колонки из входной таблицы и добавляет его в список этих элементов
+     *
      * @return список выбора колонок
      */
     private ListBox createListBox() {
@@ -128,30 +137,45 @@ public class PrototypeLane extends Composite {
         Image imgAdd = new Image(Resources.INSTANCE.imgAdd());
         imgAdd.setPixelSize(24, 24);
         final PushButton button = new PushButton(imgAdd);
-        button.setStyleName("addButton");
         Image imgAddUp = new Image(Resources.INSTANCE.imgAddUp());
         imgAddUp.setPixelSize(24, 24);
-
+        button.setTitle("Добавить элемент для выбора колонки");
         button.getDownFace().setImage(imgAddUp);
-        button.getElement().getStyle().setOpacity(0);
+        setOpacity(button, 0.3);
         button.addMouseOverHandler(new MouseOverHandler() {
             public void onMouseOver(MouseOverEvent event) {
-                button.getElement().getStyle().setOpacity(1);
+                setOpacity(button, 1);
             }
         });
         button.addMouseOutHandler(new MouseOutHandler() {
             public void onMouseOut(MouseOutEvent event) {
-                button.getElement().getStyle().setOpacity(0);
+                setOpacity(button, 0.3);
             }
         });
         button.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
+
                 listBoxPanel.add(createListBox());
-                delBtn.setVisible(true);
+                delBtn.setEnabled(true);
+                setOpacity(delBtn, 0.3);
+                if (listBoxes.size() == MAX_LIST_BOX_COUNT - 1) {
+                    button.setEnabled(false);
+                    setOpacity(button, 0.1);
+                }
             }
         });
         return button;
+    }
+
+    /**
+     * Задать прозрачность элемента
+     *
+     * @param widget  виджет, к которому применяется прозрачность
+     * @param opacity прозрачность 0<=value<=1
+     */
+    private void setOpacity(Widget widget, double opacity) {
+        widget.getElement().getStyle().setOpacity(opacity);
     }
 
     /**
@@ -163,22 +187,36 @@ public class PrototypeLane extends Composite {
         Image imgDel = new Image(Resources.INSTANCE.imgDel());
         imgDel.setPixelSize(24, 24);
         final PushButton button = new PushButton(imgDel);
-        button.setStyleName("deleteButton");
+        button.setTitle("Удалить элемент для выбора колонки");
         Image imgDelUp = new Image(Resources.INSTANCE.imgDelUp());
         imgDelUp.setPixelSize(24, 24);
         button.getDownFace().setImage(imgDelUp);
-        button.getElement().getStyle().setOpacity(0);
+        button.setEnabled(false);
+        setOpacity(button, 0.1);
         button.addMouseOverHandler(new MouseOverHandler() {
             public void onMouseOver(MouseOverEvent event) {
-                button.getElement().getStyle().setOpacity(1);
+                setOpacity(button, 1);
             }
         });
         button.addMouseOutHandler(new MouseOutHandler() {
             public void onMouseOut(MouseOutEvent event) {
-                button.getElement().getStyle().setOpacity(0);
+                setOpacity(button, 0.3);
             }
         });
-        button.setVisible(false);
+        button.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                int size = listBoxes.size() - 1;
+                listBoxes.get(size).removeFromParent();
+                listBoxes.remove(size);
+                addBtn.setEnabled(true);
+                setOpacity(addBtn, 0.3);
+                if(size == 1){
+                    button.setEnabled(false);
+                    setOpacity(button,0.1);
+                }
+            }
+        });
         return button;
     }
 
@@ -208,6 +246,7 @@ public class PrototypeLane extends Composite {
 
     /**
      * Выбрать колонку в выходной таблице
+     *
      * @param index
      */
     public void selectColumn(int index) {
