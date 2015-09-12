@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import ru.spb.nicetu.tableviewer.client.resources.Resources;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.DefaultLaneChangeListener;
@@ -233,13 +235,14 @@ public class PrototypeLane extends Composite {
                 int size = listBoxes.size() - 1;
                 listBoxes.get(size).removeFromParent();
                 listBoxes.remove(size);
-                model.getIndices().remove(model.getIndices().size());
+                model.getIndices().remove(model.getIndices().size()-1);
                 model.incCurrentIndex();
                 addBtn.setEnabled(true);
+                listener.inputColumnSet();
                 setOpacity(addBtn, 0.3);
-                if(size == 1){
+                if (size == 1) {
                     button.setEnabled(false);
-                    setOpacity(button,0.1);
+                    setOpacity(button, 0.1);
                 }
             }
         });
@@ -272,14 +275,21 @@ public class PrototypeLane extends Composite {
 
     /**
      * Выбрать колонку в выходной таблице
-     *
+     * В случае , если колонка уже выбрана других листбоксом , то выдается сообщение об ошибке и
      * @param index индекс выбранной колонки в входной таблице
      */
     public void selectColumn(int index) {
-        int columnIndex = model.getAndIncCurrentIndex();
-        listBoxes.get(columnIndex).setSelectedIndex(index);
-        model.getIndices().set(columnIndex, index); //TODO должна быть проверка какой индекс у listbox
-        listener.inputColumnSet();
+        int columnIndex = model.getCurrentIndex();
+        if(model.getIndices().contains(index)){
+            AlertMessageBox messageBox = new AlertMessageBox("Ошибка", "Выбранная колонка, уже используется");
+            listBoxes.get(columnIndex).setSelectedIndex(0);
+            messageBox.show();
+        }else {
+            model.incCurrentIndex();
+            listBoxes.get(columnIndex).setSelectedIndex(index);
+            model.getIndices().set(columnIndex, index); //TODO должна быть проверка какой индекс у listbox
+            listener.inputColumnSet();
+        }
     }
 
     /**
