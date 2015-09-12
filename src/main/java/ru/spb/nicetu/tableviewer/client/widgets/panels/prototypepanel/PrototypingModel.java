@@ -1,4 +1,4 @@
-package ru.spb.nicetu.tableviewer.client.layoutsettings;
+package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Описывает модель , используемую в компоненте макетирования
- * @author rlapin on 16.08.15.
+ * Модель панели макетирования
+ * @author rlapin
  */
-public class LayoutSettingsModel {
+public class PrototypingModel {
 
     /**
      * Определяет связь между выходной таблицей и обрабатываемым файлом
@@ -18,19 +18,56 @@ public class LayoutSettingsModel {
      */
     private Map<Integer, Integer> links = new HashMap<Integer, Integer>();
     /**
-     * Список с имена колонок
+     * Список с именами колонок выходной таблицы
      */
     private final List<String> columnsNames;
-
+    /**
+     * Индекс строки, с которой начинается выводимый диапазон
+     */
+    private int startRow;
+    /**
+     * Индекс строки , которой оканчивается выводимый диапазон
+     */
+    private int endRow;
 
     /**
      * @param columns массив имен колонок
      */
-    public LayoutSettingsModel(String[] columns) {
+    public PrototypingModel(String[] columns) {
         columnsNames = new ArrayList<String>();
         for (String column : columns) {
             columnsNames.add(column);
         }
+    }
+
+    /**
+     *
+     * @return индекс строки , с которой начинается выходной диапазон
+     */
+    public int getStartRow() {
+        return startRow;
+    }
+
+    /**
+     * Задать индекс строки, с которой начинается выходной диапазон
+     * @param startRow индекс строки
+     */
+    public void setStartRow(int startRow) {
+        this.startRow = startRow;
+    }
+    /**
+     *
+     * @return индекс строки , которой заканчивается выходной диапазон
+     */
+    public int getEndRow() {
+        return endRow;
+    }
+    /**
+     * Задать индекс строки, которой заканчивается выходной диапазон
+     * @param endRow индекс строки
+     */
+    public void setEndRow(int endRow) {
+        this.endRow = endRow;
     }
 
     /**

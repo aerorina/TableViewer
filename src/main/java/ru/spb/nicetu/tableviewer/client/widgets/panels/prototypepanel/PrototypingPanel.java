@@ -1,63 +1,49 @@
-package ru.spb.nicetu.tableviewer.client.layoutsettings;
+package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
 
-import static com.google.gwt.query.client.GQuery.$;
-
-
-
-
-
-
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.query.client.Function;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
+import ru.spb.nicetu.tableviewer.client.widgets.GTextRange;
+import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
+import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.LaneChangeListener;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import ru.spb.nicetu.tableviewer.client.resources.Resources;
+
+import static com.google.gwt.query.client.GQuery.$;
 
 /**
  * Компонент для настройки макета таблицы
  *
  * @author rlapin on 16.08.15.
  */
-public class LayoutSettingsPanel extends Composite {
-    /**
-     * Количество знаков в английском алфавите
-     */
-    public static final int ENG_ALPH_SIZE = 25;
+public class PrototypingPanel extends Composite {
+
     /**
      * CSS - класс таблицы
      */
-    public static final String TABLE_CLASS = ".excelDefaults";
+    public static final String TABLE_CSS_CLASS = ".excelDefaults";
+    public static final String PANEL_CSS_CLASS = "gwt-PrototypingPanel";
     /**
      * Компонент задающий диапазон строк , которые будут входить в выходную таблицу
      */
-    private final GTextRange textRange;
+    private GTextRange textRange;
     /**
      * Количество столбцов в входной таблице
      */
-    private final int inputTableColumnCount;
+    private int inputTableColumnCount;
     /**
      * Выходная колонка
      */
@@ -66,94 +52,103 @@ public class LayoutSettingsPanel extends Composite {
      * Выбираем начальный диапазон или конечный?
      */
     private boolean isSelectStartRange = true;
-    final private LayoutSettingsModel model;
+    final private PrototypingModel model;
+    private List<PrototypeLane> prototypeLaneList;
     private TabPanel tabPanel;
+    /**
+     * Заголовок панели
+     */
+    private String title;
+
+
 
 
     /**
-     * Заполняет listBox со значениями от A до A+#количество столбцов в таблице , также добавляя пустое значение
+     * @param model модель компонента {@link PrototypingModel}
      *
-     * @param box  компонент , в который добавляются значения
-     * @param size количество столбцов в таблице
      */
-    private void fillListBox(ListBox box, int size) {
-        box.addItem(" ");
-        int ch = 0;
-        for (int i = 0; i < size; i++) {
-            int tempCh = ch;
-            String str = "";
-            while (tempCh > ENG_ALPH_SIZE) {
-                str = (char) ((tempCh % (ENG_ALPH_SIZE + 1)) + 'A') + str;
-                tempCh = tempCh / (ENG_ALPH_SIZE + 1) - 1;
+    public PrototypingPanel(PrototypingModel model, TabPanel tabPanel, String title) {
+        this.model = model;
+        this.tabPanel = tabPanel;
+        this.title = title;
+        initComponents();
+        initTableListeners();
+    }
 
-            }
-            str = (char) (tempCh + 'A') + str;
-            box.addItem(str);
-            ch++;
+
+
+    private void initComponents() {
+        VerticalPanel settingsPanel = new VerticalPanel();
+        settingsPanel.setStyleName(PANEL_CSS_CLASS);
+        Label label = new Label(title);
+        label.setStyleName("labeldesc");
+        settingsPanel.add(label);
+        inputTableColumnCount = $(TABLE_CSS_CLASS + " th").length() - 1;
+        prototypeLaneList = new ArrayList<PrototypeLane>();
+        for (int i = 0; i < model.getColumnsCount(); i++) {
+
+//            lane.add(createDelBtn());
+            final PrototypeLaneModel prototypeLaneModel = new PrototypeLaneModel(this.model.getColumnName(i), i == 0, inputTableColumnCount);
+            PrototypeLane prototypeLane = new PrototypeLane(prototypeLaneModel);
+            final int index = i;
+            prototypeLane.setListener(new LaneChangeListener() {
+                @Override
+                public void laneSelected() {
+                    changeItemHandler(index, prototypeLaneModel.getIndices().get(0));
+                }
+
+                @Override
+                public void inputColumnSet() {
+                    changeItemHandler(index, prototypeLaneModel.getIndices().get(0));
+                }
+
+                @Override
+                public void inputColumnAdded() {
+
+                }
+
+                @Override
+                public void inputColumnRemoved() {
+
+                }
+            });
+            settingsPanel.add(prototypeLane);
+            prototypeLaneList.add(prototypeLane);
         }
+        settingsPanel.add(createRangePanel());
+        settingsPanel.add(createPerformButton());
+
+        initWidget(settingsPanel);
     }
 
     /**
-     * @param model модель компонента {@link LayoutSettingsModel}
-     * @param text  заголовок панели
+     * Создание панели для задания диапазона строк в выходной таблице<br>
+     * @return панель задания диапазона строк. Для изменения стиля использовать класс <b>.gwt-rangeTextLane</b><br>
      */
-    public LayoutSettingsPanel(LayoutSettingsModel model, TabPanel tabPanel, String text) {
-        this.model = model;
-        this.tabPanel = tabPanel;
-        VerticalPanel settingsPanel = new VerticalPanel();
-        settingsPanel.setStyleName("gwt-LayoutSettingsPanel");
-        Label label = new Label(text);
-        label.setStyleName("labeldesc");
-        boolean isFirst = true;
-        settingsPanel.add(label);
-        this.inputTableColumnCount = $(TABLE_CLASS + " th").length() - 1;
-        for (int i = 0; i < model.getColumnsCount(); i++) {
-            FocusPanel focusPanel = new FocusPanel();
-            HorizontalPanel lane = new HorizontalPanel();
-            HorizontalPanel columnLane = new HorizontalPanel();
-            columnLane.setStyleName("columnLane");
-            final RadioButton radioButton = new RadioButton("colsel", model.getColumnName(i));
-            if (isFirst) {
-                radioButton.setValue(true);
-                isFirst = false;
-            }
-            final int index = i;
-            final ListBox listBox = new ListBox();
-            radioButton.addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
-                    changeItemHandler(index, listBox.getSelectedIndex());
-                }
-            });
-
-            listBox.addChangeHandler(new ChangeHandler() {
-                public void onChange(ChangeEvent event) {
-                    changeItemHandler(index, listBox.getSelectedIndex());
-                }
-            });
-            fillListBox(listBox, inputTableColumnCount);
-            columnLane.add(radioButton);
-            columnLane.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-            columnLane.add(listBox);
-            focusPanel.add(columnLane);
-            focusPanel.addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
-                    radioButton.setValue(true);
-                    changeItemHandler(index, listBox.getSelectedIndex());
-                }
-            });
-            lane.add(focusPanel);
-            lane.add(createAddBtn());
-//            lane.add(createDelBtn());
-            settingsPanel.add(lane);
-        }
+    private HorizontalPanel createRangePanel() {
         HorizontalPanel rangePanel = new HorizontalPanel();
         rangePanel.setStyleName("gwt-rangeTextLane");
         Label rangeLabel = new Label("Диапазон строк для обработки: ");
         textRange = new GTextRange();
+        textRange.setChangeListener(new ChangeListener() {
+            @Override
+            public void onChanged() {
+                model.setStartRow(textRange.getStartValue());
+                model.setEndRow(textRange.getEndValue());
+            }
+        });
         rangePanel.add(rangeLabel);
         rangePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         rangePanel.add(textRange);
-        settingsPanel.add(rangePanel);
+        return rangePanel;
+    }
+
+
+    /**
+     * Создать кнопку для обработки таблицы согласно макету
+     * @return gwt-кнопка
+     */
+    private Button createPerformButton() {
         Button btnPerform = new Button("Обработать загруженный файл");
         btnPerform.addClickHandler(new ClickHandler() {
             @Override
@@ -161,9 +156,7 @@ public class LayoutSettingsPanel extends Composite {
                 processInputFile();
             }
         });
-        settingsPanel.add(btnPerform);
-        initWidget(settingsPanel);
-        initTableListeners();
+        return btnPerform;
     }
 
     /**
@@ -171,8 +164,8 @@ public class LayoutSettingsPanel extends Composite {
      */
     private void processInputFile() {
 
-        final int startRow = textRange.getStartValue();
-        final int endRow = textRange.getEndValue();
+        final int startRow = model.getStartRow();
+        final int endRow = model.getEndRow();
         if (startRow < endRow) {
             HTML html = new HTML();
             final StringBuilder stringBuilder = new StringBuilder();
@@ -186,7 +179,7 @@ public class LayoutSettingsPanel extends Composite {
                 num[links.get(key)]++;
             }
             stringBuilder.append("</tr>");
-            $(TABLE_CLASS + " tr").each(new Function() {
+            $(TABLE_CSS_CLASS + " tr").each(new Function() {
                 @Override
                 public void f() {
                     if ($(this).index() >= startRow - 1 && $(this).index() < endRow) {
@@ -272,7 +265,7 @@ public class LayoutSettingsPanel extends Composite {
      */
     private void initRowHeaderListener() {
 
-        $(TABLE_CLASS + " tr td:first-child").click(new Function() {
+        $(TABLE_CSS_CLASS + " tr td:first-child").click(new Function() {
             @Override
             public boolean f(Event e) {
                 GQuery parent = $(this).parent();
@@ -292,18 +285,18 @@ public class LayoutSettingsPanel extends Composite {
         if (isSelectStartRange) {
             int oldValue = textRange.getStartValue();
             if (oldValue != index + 1) {
-//                $(TABLE_CLASS + " tr").eq(oldValue).removeClass("selrow");
+//                $(TABLE_CSS_CLASS + " tr").eq(oldValue).removeClass("selrow");
                 textRange.setStartValue(index + 1);
-//                $(TABLE_CLASS + " tr").eq(index + 1).addClass("selrow");
+//                $(TABLE_CSS_CLASS + " tr").eq(index + 1).addClass("selrow");
             }
 
         } else {
             int oldValue = textRange.getEndValue();
 
             if (oldValue != index + 1) {
-//                $(TABLE_CLASS + " tr").eq(oldValue).removeClass("selrow");
+//                $(TABLE_CSS_CLASS + " tr").eq(oldValue).removeClass("selrow");
                 textRange.setEndValue(index + 1);
-//                $(TABLE_CLASS + " tr").eq(index + 1).addClass("selrow");
+//                $(TABLE_CSS_CLASS + " tr").eq(index + 1).addClass("selrow");
             }
         }
         isSelectStartRange = !isSelectStartRange;
@@ -313,12 +306,13 @@ public class LayoutSettingsPanel extends Composite {
      * Иницилизация слушателей для столбцов таблицы
      */
     private void initColumnHeaderListeners() {
-        $(TABLE_CLASS + " th").click(new Function() {
+        $(TABLE_CSS_CLASS + " th").click(new Function() {
             @Override
             public boolean f(Event e) {
                 int index = $(this).index();
                 selectColumn(index);
-                $(".gwt-LayoutSettingsPanel .gwt-ListBox").eq(outputColumn).prop("selectedIndex", "" + index);
+                prototypeLaneList.get(outputColumn).selectColumn(index);
+
 
                 return true;
             }
@@ -343,10 +337,10 @@ public class LayoutSettingsPanel extends Composite {
      */
     private void selectColumn(final int index) {
 
-        $(TABLE_CLASS + " tr td").removeClass("selcolumn");
+        $(TABLE_CSS_CLASS + " tr td").removeClass("selcolumn");
         if (index != 0) {
             model.putLinkValue(outputColumn, index);
-            $(TABLE_CLASS + " tr").each(new Function() {
+            $(TABLE_CSS_CLASS + " tr").each(new Function() {
                 int val;
 
                 @Override
@@ -378,55 +372,7 @@ public class LayoutSettingsPanel extends Composite {
         }
     }
 
-    /**
-     * Создать кнопку для добавления новой строки в макет таблицы
-     *
-     * @return кнопку добавления
-     */
-    private Widget createAddBtn() {
-        Image imgAdd = new Image(Resources.INSTANCE.imgAdd());
-        imgAdd.setPixelSize(24, 24);
-        final PushButton button = new PushButton(imgAdd);
-        Image imgAddUp = new Image(Resources.INSTANCE.imgAddUp());
-        imgAddUp.setPixelSize(24, 24);
-        button.getDownFace().setImage(imgAddUp);
-        button.getElement().getStyle().setOpacity(0);
-        button.addMouseOverHandler(new MouseOverHandler() {
-            public void onMouseOver(MouseOverEvent event) {
-                button.getElement().getStyle().setOpacity(1);
-            }
-        });
-        button.addMouseOutHandler(new MouseOutHandler() {
-            public void onMouseOut(MouseOutEvent event) {
-                button.getElement().getStyle().setOpacity(0);
-            }
-        });
-        return button;
-    }
 
-    /**
-     * Создать кнопку для удаления строки из макета таблицы
-     *
-     * @return кнопка удаления
-     */
-    private Widget createDelBtn() {
-        Image imgDel = new Image(Resources.INSTANCE.imgDel());
-        imgDel.setPixelSize(24, 24);
-        final PushButton button = new PushButton(imgDel);
-        Image imgDelUp = new Image(Resources.INSTANCE.imgDelUp());
-        imgDelUp.setPixelSize(24, 24);
-        button.getDownFace().setImage(imgDelUp);
-        button.getElement().getStyle().setOpacity(0);
-        button.addMouseOverHandler(new MouseOverHandler() {
-            public void onMouseOver(MouseOverEvent event) {
-                button.getElement().getStyle().setOpacity(1);
-            }
-        });
-        button.addMouseOutHandler(new MouseOutHandler() {
-            public void onMouseOut(MouseOutEvent event) {
-                button.getElement().getStyle().setOpacity(0);
-            }
-        });
-        return button;
-    }
+
+
 }

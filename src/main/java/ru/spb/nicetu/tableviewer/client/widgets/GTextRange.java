@@ -1,15 +1,23 @@
-package ru.spb.nicetu.tableviewer.client.layoutsettings;
+package ru.spb.nicetu.tableviewer.client.widgets;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
+import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
+import ru.spb.nicetu.tableviewer.client.widgets.listeners.DefaultChangeListener;
 
 /**
- * Компонент для задания диапазона значений
- * @author root
+ * Компонент для задания диапазона значений<br>
+ * Для задания стилей самого компонента используйте класс <b>.gwt-rangeTextLane</b><br>
+ * Для задания стилей для полей ввода используйте класс <b>.gwt-rangeTextLane input[type=number]</b><br>
+ * Для задания стилей для разделителя используйте класс <b>.gwt-rangeTextLane .gwt-Label</b><br>
+ * @author rlapin
  */
 public class GTextRange extends Composite {
+    private ChangeListener changeListener = new DefaultChangeListener();
     private final IntegerBox startBox;
     private final IntegerBox endBox;
 
@@ -29,9 +37,30 @@ public class GTextRange extends Composite {
 
     }
 
+    /**
+     * Задать слушателя для события изменение значения
+     * @param changeListener
+     */
+    public void setChangeListener(ChangeListener changeListener) {
+        this.changeListener = changeListener;
+    }
+
     private void setupWidget(IntegerBox box) {
+        box.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent changeEvent) {
+                valueChanged();
+            }
+        });
         box.getElement().setAttribute("type", "number");
         box.setWidth("60px");
+    }
+
+    /**
+     * Сообщает слушателю об изменении значений в компоненте
+     */
+    private void valueChanged() {
+        changeListener.onChanged();
     }
 
     public int getStartValue() {
@@ -57,6 +86,7 @@ public class GTextRange extends Composite {
      */
     public void setStartValue(int value){
         startBox.setValue(value);
+        valueChanged();
     }
 
     /**
@@ -65,6 +95,7 @@ public class GTextRange extends Composite {
      */
     public void setEndValue(int value){
         endBox.setValue(value);
+        valueChanged();
     }
 
 }

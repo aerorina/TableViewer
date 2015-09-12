@@ -1,4 +1,4 @@
-.gwt-LayoutSettingsPanel{
+.gwt-PrototypingPanel{
     margin-left: 10px;
     width: 600px;
     margin-bottom: 5px;
@@ -12,27 +12,27 @@
 
 
 }
-.gwt-LayoutSettingsPanel .labeldesc{
+.gwt-PrototypingPanel .labeldesc{
     font-weight: bold;
     padding: 5px;
     background: #00d2ff;
     color: #3a3a4d;
     margin-bottom: 5px;
 }
-.gwt-LayoutSettingsPanel .gwt-ListBox{
+.gwt-PrototypingPanel .gwt-ListBox{
     background: #70d8ff;
 }
-.gwt-LayoutSettingsPanel .columnLane{
+.gwt-PrototypingPanel .columnLane{
     width: 600px;
     margin-bottom: 5px;
     margin-left: 5px;
     margin-right: 5px;
     outline: none;
 }
-.gwt-LayoutSettingsPanel .columnLane:hover{
+.gwt-PrototypingPanel .focusPanel:hover{
     background: #61b8ff;
 }
-.gwt-LayoutSettingsPanel .columnLane{
+.gwt-PrototypingPanel .columnLane{
     outline: none !important;
 }
 .errorLabel{
@@ -112,11 +112,14 @@
     line-height: 18px;
 }
 
-.gwt-LayoutSettingsPanel *:not(#fake) {
+.gwt-PrototypingPanel *:not(#fake) {
     outline: none
 }
 
-.gwt-LayoutSettingsPanel .gwt-PushButton {
+.gwt-PrototypingPanel .addButton {
     margin-right:-30px;
+}
+.gwt-PrototypingPanel .deleteButton {
+    margin-right:-60px;
 }
 

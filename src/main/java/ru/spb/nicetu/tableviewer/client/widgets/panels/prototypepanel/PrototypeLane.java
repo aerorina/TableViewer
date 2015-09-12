@@ -1,0 +1,218 @@
+package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
+
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.Widget;
+import ru.spb.nicetu.tableviewer.client.resources.Resources;
+import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.DefaultLaneChangeListener;
+import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.LaneChangeListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Строка в панели макетирования, отвечающая за задание соответствия между столбцом макета и столбцом электронной таблицы
+ *
+ * @author rlapin
+ */
+public class PrototypeLane extends Composite {
+    /**
+     * Количество знаков в английском алфавите
+     */
+    public static final int ENG_ALPH_SIZE = 25;
+    /**
+     * Модель компонента
+     */
+    private final PrototypeLaneModel model;
+    /**
+     * Слушатель изменения значений в компоненте
+     */
+    private LaneChangeListener listener = new DefaultLaneChangeListener();
+    /**
+     * Список элементов для выбора колонок
+     */
+    private List<ListBox> listBoxes = new ArrayList<ListBox>();
+    private HorizontalPanel listBoxPanel = new HorizontalPanel();
+    /**
+     * Кнопка для удаления listbox
+     */
+    private PushButton delBtn;
+
+    public PrototypeLane(PrototypeLaneModel model) {
+        this.model = model;
+        initComponents();
+
+    }
+
+    public void setListener(LaneChangeListener listener) {
+        this.listener = listener;
+    }
+
+    /**
+     * Иницилизация компонентов
+     */
+    private void initComponents() {
+        FocusPanel focusPanel = new FocusPanel();
+        HorizontalPanel lane = new HorizontalPanel();
+        HorizontalPanel columnLane = new HorizontalPanel();
+        columnLane.setStyleName("columnLane");
+        focusPanel.setStyleName("focusPanel");
+        final RadioButton radioButton = new RadioButton("colsel", model.getColumnName());
+        radioButton.setValue(model.isColumnChecked());
+
+        radioButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                listener.laneSelected();
+            }
+        });
+        final ListBox listBox = createListBox();
+
+        listBoxPanel.add(listBox);
+        focusPanel.add(radioButton);
+
+        focusPanel.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                radioButton.setValue(true);
+                listener.laneSelected();
+            }
+        });
+        columnLane.add(focusPanel);
+        columnLane.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        columnLane.add(listBoxPanel);
+        lane.add(columnLane);
+        lane.add(createAddBtn());
+        delBtn = createDelBtn();
+        lane.add(delBtn);
+        initWidget(lane);
+    }
+
+    /**
+     * Создает элемент управления для выбора колонки из входной таблицы и добавляет его в список этих элементов
+     * @return список выбора колонок
+     */
+    private ListBox createListBox() {
+        final ListBox listBox = new ListBox();
+        listBox.addChangeHandler(new ChangeHandler() {
+            public void onChange(ChangeEvent event) {
+                selectColumn(listBox.getSelectedIndex());
+
+            }
+        });
+
+        fillListBox(listBox, model.getInputColumnCount());
+        listBoxes.add(listBox);
+        return listBox;
+    }
+
+    /**
+     * Создать кнопку для добавления новой строки в макет таблицы
+     *
+     * @return кнопку добавления
+     */
+    private PushButton createAddBtn() {
+        Image imgAdd = new Image(Resources.INSTANCE.imgAdd());
+        imgAdd.setPixelSize(24, 24);
+        final PushButton button = new PushButton(imgAdd);
+        button.setStyleName("addButton");
+        Image imgAddUp = new Image(Resources.INSTANCE.imgAddUp());
+        imgAddUp.setPixelSize(24, 24);
+
+        button.getDownFace().setImage(imgAddUp);
+        button.getElement().getStyle().setOpacity(0);
+        button.addMouseOverHandler(new MouseOverHandler() {
+            public void onMouseOver(MouseOverEvent event) {
+                button.getElement().getStyle().setOpacity(1);
+            }
+        });
+        button.addMouseOutHandler(new MouseOutHandler() {
+            public void onMouseOut(MouseOutEvent event) {
+                button.getElement().getStyle().setOpacity(0);
+            }
+        });
+        button.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                listBoxPanel.add(createListBox());
+                delBtn.setVisible(true);
+            }
+        });
+        return button;
+    }
+
+    /**
+     * Создать кнопку для удаления строки из макета таблицы
+     *
+     * @return кнопка удаления
+     */
+    private PushButton createDelBtn() {
+        Image imgDel = new Image(Resources.INSTANCE.imgDel());
+        imgDel.setPixelSize(24, 24);
+        final PushButton button = new PushButton(imgDel);
+        button.setStyleName("deleteButton");
+        Image imgDelUp = new Image(Resources.INSTANCE.imgDelUp());
+        imgDelUp.setPixelSize(24, 24);
+        button.getDownFace().setImage(imgDelUp);
+        button.getElement().getStyle().setOpacity(0);
+        button.addMouseOverHandler(new MouseOverHandler() {
+            public void onMouseOver(MouseOverEvent event) {
+                button.getElement().getStyle().setOpacity(1);
+            }
+        });
+        button.addMouseOutHandler(new MouseOutHandler() {
+            public void onMouseOut(MouseOutEvent event) {
+                button.getElement().getStyle().setOpacity(0);
+            }
+        });
+        button.setVisible(false);
+        return button;
+    }
+
+    /**
+     * Заполняет listBox со значениями от A до A+#количество столбцов в таблице , также добавляя пустое значение
+     *
+     * @param box  компонент , в который добавляются значения
+     * @param size количество столбцов в таблице
+     */
+    //TODO сделать чтобы заполнение происходило один раз и просто передавать массив строк
+    private void fillListBox(ListBox box, int size) {
+        box.addItem(" ");
+        int ch = 0;
+        for (int i = 0; i < size; i++) {
+            int tempCh = ch;
+            String str = "";
+            while (tempCh > ENG_ALPH_SIZE) {
+                str = (char) ((tempCh % (ENG_ALPH_SIZE + 1)) + 'A') + str;
+                tempCh = tempCh / (ENG_ALPH_SIZE + 1) - 1;
+
+            }
+            str = (char) (tempCh + 'A') + str;
+            box.addItem(str);
+            ch++;
+        }
+    }
+
+    /**
+     * Выбрать колонку в выходной таблице
+     * @param index
+     */
+    public void selectColumn(int index) {
+        listBoxes.get(0).setSelectedIndex(index);
+        model.getIndices().set(0, index); //TODO должна быть проверка какой индекс у listbox
+        listener.inputColumnSet();
+    }
+}

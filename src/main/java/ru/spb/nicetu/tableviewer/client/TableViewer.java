@@ -32,8 +32,8 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import ru.spb.nicetu.tableviewer.client.layoutsettings.LayoutSettingsModel;
-import ru.spb.nicetu.tableviewer.client.layoutsettings.LayoutSettingsPanel;
+import ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel.PrototypingModel;
+import ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel.PrototypingPanel;
 import ru.spb.nicetu.tableviewer.client.resources.Resources;
 
 /**
@@ -58,7 +58,7 @@ public class TableViewer implements EntryPoint {
     public static final String[] COLUMN_NAMES = new String[]{"Наименование","Дата начала","Дата окончания","Время начала","Время окончания",
     "Продолжительность (час)","Отвественное подразделение (наименование)","Ответственное лицо (ФИО)","Примечание"};
     private HorizontalPanel mainPanel;
-    private LayoutSettingsPanel layoutSettingsPanel;
+    private PrototypingPanel prototypingPanel;
 
     public void onModuleLoad() {
         mainPanel = new HorizontalPanel();
@@ -140,8 +140,8 @@ public class TableViewer implements EntryPoint {
                 tabPanel.setVisible(false);
 
                 actionLabel.setStyleName("processLabel");
-                if (layoutSettingsPanel != null) {
-                    mainPanel.remove(layoutSettingsPanel);
+                if (prototypingPanel != null) {
+                    mainPanel.remove(prototypingPanel);
                 }
                 filePath = event.getResults();
                 actionLabel.setHTML("Начинаем загрузку файла");
@@ -177,9 +177,9 @@ public class TableViewer implements EntryPoint {
                     tableHTML.setHTML(result);
                     tabPanel.selectTab(0);
                     tabPanel.setVisible(true);
-
-                    layoutSettingsPanel = new LayoutSettingsPanel(new LayoutSettingsModel(COLUMN_NAMES), tabPanel, "Укажите столбцы с данными для загрузки");
-                    mainPanel.add(layoutSettingsPanel);
+                    tabPanel.setWidth("600px");
+                    prototypingPanel = new PrototypingPanel(new PrototypingModel(COLUMN_NAMES), tabPanel,"Укажите столбцы с данными для загрузки");
+                    mainPanel.add(prototypingPanel);
                 }
             }
         });
