@@ -15,13 +15,5 @@ public class DefaultLaneChangeListener implements LaneChangeListener{
 
     }
 
-    @Override
-    public void inputColumnAdded() {
 
-    }
-
-    @Override
-    public void inputColumnRemoved() {
-
-    }
 }

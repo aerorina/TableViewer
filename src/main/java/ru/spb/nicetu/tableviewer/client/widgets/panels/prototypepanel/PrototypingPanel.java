@@ -61,11 +61,8 @@ public class PrototypingPanel extends Composite {
     private String title;
 
 
-
-
     /**
      * @param model модель компонента {@link PrototypingModel}
-     *
      */
     public PrototypingPanel(PrototypingModel model, TabPanel tabPanel, String title) {
         this.model = model;
@@ -74,7 +71,6 @@ public class PrototypingPanel extends Composite {
         initComponents();
         initTableListeners();
     }
-
 
 
     private void initComponents() {
@@ -94,23 +90,14 @@ public class PrototypingPanel extends Composite {
             prototypeLane.setListener(new LaneChangeListener() {
                 @Override
                 public void laneSelected() {
-                    changeItemHandler(index, prototypeLaneModel.getIndices().get(0));
+                    changeItemHandler(index);
                 }
 
                 @Override
                 public void inputColumnSet() {
-                    changeItemHandler(index, prototypeLaneModel.getIndices().get(0));
+                    changeItemHandler(index);
                 }
 
-                @Override
-                public void inputColumnAdded() {
-
-                }
-
-                @Override
-                public void inputColumnRemoved() {
-
-                }
             });
             settingsPanel.add(prototypeLane);
             prototypeLaneList.add(prototypeLane);
@@ -123,6 +110,7 @@ public class PrototypingPanel extends Composite {
 
     /**
      * Создание панели для задания диапазона строк в выходной таблице<br>
+     *
      * @return панель задания диапазона строк. Для изменения стиля использовать класс <b>.gwt-rangeTextLane</b><br>
      */
     private HorizontalPanel createRangePanel() {
@@ -146,6 +134,7 @@ public class PrototypingPanel extends Composite {
 
     /**
      * Создать кнопку для обработки таблицы согласно макету
+     *
      * @return gwt-кнопка
      */
     private Button createPerformButton() {
@@ -172,7 +161,7 @@ public class PrototypingPanel extends Composite {
             stringBuilder.append("<table>");
             final Map<Integer, Integer> links = model.getLinks();
             stringBuilder.append("<tr>");
-            final int []num = new int[inputTableColumnCount];
+            final int[] num = new int[inputTableColumnCount];
             for (Integer key : links.keySet()) {
                 stringBuilder.append("<th>").append(model.getColumnName(key)).append("</th>");
 
@@ -224,13 +213,14 @@ public class PrototypingPanel extends Composite {
 
     /**
      * Получить значение из столбца таблицы
-     * @param row строка таблица в терминах GwtQuery
+     *
+     * @param row   строка таблица в терминах GwtQuery
      * @param index номер столбца таблицы
      * @return текстовое значение ячейки таблицы
      */
     private String getTableValueByIndex(GQuery row, final int index) {
-        
-        final String []result = new String[1];
+
+        final String[] result = new String[1];
         row.children("td").each(new Function() {
             int val = 0;
 
@@ -252,6 +242,7 @@ public class PrototypingPanel extends Composite {
         });
         return result[0];
     }
+
     /**
      * Иницилизация слушателей для строк и столбцов таблицы
      */
@@ -310,7 +301,6 @@ public class PrototypingPanel extends Composite {
             @Override
             public boolean f(Event e) {
                 int index = $(this).index();
-                selectColumn(index);
                 prototypeLaneList.get(outputColumn).selectColumn(index);
 
 
@@ -323,56 +313,54 @@ public class PrototypingPanel extends Composite {
      * Действие по выбору элемента в панели
      *
      * @param index
-     * @param selectedIndex выбранная колонка во входной таблице , соответствующая данной выходной колонке
      */
-    private void changeItemHandler(int index, int selectedIndex) {
-        selectColumn(selectedIndex);
+    private void changeItemHandler(int index) {
         outputColumn = index;
+        highlightColumns();
     }
 
     /**
-     * Выбор колонки с индексом
-     *
-     * @param index индекс колонки
+     * Подсветка колонок входной таблицы для выбранного выходного столбца
      */
-    private void selectColumn(final int index) {
+    private void highlightColumns() {
 
+        PrototypeLaneModel model = prototypeLaneList.get(outputColumn).getModel();
         $(TABLE_CSS_CLASS + " tr td").removeClass("selcolumn");
-        if (index != 0) {
-            model.putLinkValue(outputColumn, index);
-            $(TABLE_CSS_CLASS + " tr").each(new Function() {
-                int val;
+        for (final int index : model.getIndices()) {
+            if (index != 0) {
+                this.model.putLinkValue(outputColumn, index);
+                $(TABLE_CSS_CLASS + " tr").each(new Function() {
+                    int val;
 
-                @Override
-                public void f() {
-                    val = 0;
-                    $(this).children("td").each(new Function() {
-                        @Override
-                        public void f() {
-                            GQuery col = $(this);
+                    @Override
+                    public void f() {
+                        val = 0;
+                        $(this).children("td").each(new Function() {
+                            @Override
+                            public void f() {
+                                GQuery col = $(this);
 
-                            if (!col.attr("colspan").isEmpty()) {
-                                int span = Integer.parseInt(col.attr("colspan"));
-                                val += span;
-                            } else {
-                                val++;
-                                if (val == index + 1) {
-                                    $(this).addClass("selcolumn");
+                                if (!col.attr("colspan").isEmpty()) {
+                                    int span = Integer.parseInt(col.attr("colspan"));
+                                    val += span;
+                                } else {
+                                    val++;
+                                    if (val == index + 1) {
+                                        $(this).addClass("selcolumn");
+                                    }
                                 }
+
+
                             }
+                        });
 
-
-                        }
-                    });
-
-                }
-            });
-        }else{
-            model.removeLinkValue(outputColumn);
+                    }
+                });
+            } else {
+                this.model.removeLinkValue(outputColumn);
+            }
         }
     }
-
-
 
 
 }

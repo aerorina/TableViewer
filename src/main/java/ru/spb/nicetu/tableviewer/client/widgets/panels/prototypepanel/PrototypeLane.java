@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
 import ru.spb.nicetu.tableviewer.client.resources.Resources;
+import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.DefaultLaneChangeListener;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.LaneChangeListener;
 
@@ -62,8 +63,30 @@ public class PrototypeLane extends Composite {
 
     public PrototypeLane(PrototypeLaneModel model) {
         this.model = model;
-        initComponents();
 
+        initComponents();
+        initListeners();
+        model.setCurrentIndexToLast();
+    }
+
+    /**
+     * Иницилизация слушателей
+     */
+    private void initListeners() {
+        model.setColumnChangeListener(new ChangeListener() {
+            @Override
+            public void onChanged() {
+                for (int i = 0; i < listBoxes.size(); i++) {
+                    ListBox listBox = listBoxes.get(i);
+                    if(i == model.getCurrentIndex()) {
+                        listBox.addStyleName("activecolumn");
+                    }else {
+                        listBox.removeStyleName("activecolumn");
+                    }
+
+                }
+            }
+        });
     }
 
     public void setListener(LaneChangeListener listener) {
@@ -119,7 +142,6 @@ public class PrototypeLane extends Composite {
         listBox.addChangeHandler(new ChangeHandler() {
             public void onChange(ChangeEvent event) {
                 selectColumn(listBox.getSelectedIndex());
-
             }
         });
 
@@ -159,6 +181,8 @@ public class PrototypeLane extends Composite {
                 listBoxPanel.add(createListBox());
                 delBtn.setEnabled(true);
                 setOpacity(delBtn, 0.3);
+                model.getIndices().add(0);
+                model.setCurrentIndexToLast();
                 if (listBoxes.size() == MAX_LIST_BOX_COUNT - 1) {
                     button.setEnabled(false);
                     setOpacity(button, 0.1);
@@ -209,6 +233,8 @@ public class PrototypeLane extends Composite {
                 int size = listBoxes.size() - 1;
                 listBoxes.get(size).removeFromParent();
                 listBoxes.remove(size);
+                model.getIndices().remove(model.getIndices().size());
+                model.incCurrentIndex();
                 addBtn.setEnabled(true);
                 setOpacity(addBtn, 0.3);
                 if(size == 1){
@@ -247,11 +273,19 @@ public class PrototypeLane extends Composite {
     /**
      * Выбрать колонку в выходной таблице
      *
-     * @param index
+     * @param index индекс выбранной колонки в входной таблице
      */
     public void selectColumn(int index) {
-        listBoxes.get(0).setSelectedIndex(index);
-        model.getIndices().set(0, index); //TODO должна быть проверка какой индекс у listbox
+        int columnIndex = model.getAndIncCurrentIndex();
+        listBoxes.get(columnIndex).setSelectedIndex(index);
+        model.getIndices().set(columnIndex, index); //TODO должна быть проверка какой индекс у listbox
         listener.inputColumnSet();
+    }
+
+    /**
+     * @return модель компонента
+     */
+    public PrototypeLaneModel getModel() {
+        return model;
     }
 }

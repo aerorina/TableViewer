@@ -15,13 +15,4 @@ public interface LaneChangeListener {
      */
     void inputColumnSet();
 
-    /**
-     * Добавлена новая колонка
-     */
-    void inputColumnAdded();
-
-    /**
-     * Удалена колонка
-     */
-    void inputColumnRemoved();
 }

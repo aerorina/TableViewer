@@ -23,6 +23,11 @@
 .gwt-PrototypingPanel .gwt-ListBox{
     background: #70d8ff;
 }
+
+.gwt-PrototypingPanel .activecolumn{
+    background: #e2f6ff;
+}
+
 .gwt-PrototypingPanel .columnLane{
     width: 600px;
     margin-bottom: 5px;
