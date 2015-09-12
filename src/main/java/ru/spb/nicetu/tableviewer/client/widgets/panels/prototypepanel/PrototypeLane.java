@@ -62,6 +62,7 @@ public class PrototypeLane extends Composite {
      */
     private PushButton delBtn;
     private PushButton addBtn;
+    private RadioButton radioButton;
 
     public PrototypeLane(PrototypeLaneModel model) {
         this.model = model;
@@ -104,7 +105,7 @@ public class PrototypeLane extends Composite {
         HorizontalPanel columnLane = new HorizontalPanel();
         columnLane.setStyleName("columnLane");
         focusPanel.setStyleName("focusPanel");
-        final RadioButton radioButton = new RadioButton("colsel", model.getColumnName());
+        radioButton = new RadioButton("colsel", model.getColumnName());
         radioButton.setValue(model.isColumnChecked());
 
         radioButton.addClickHandler(new ClickHandler() {
@@ -124,6 +125,7 @@ public class PrototypeLane extends Composite {
             }
         });
         columnLane.add(focusPanel);
+        focusPanel.setWidth("600px");
         columnLane.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         columnLane.add(listBoxPanel);
         lane.add(columnLane);
@@ -235,7 +237,7 @@ public class PrototypeLane extends Composite {
                 int size = listBoxes.size() - 1;
                 listBoxes.get(size).removeFromParent();
                 listBoxes.remove(size);
-                model.getIndices().remove(model.getIndices().size()-1);
+                model.getIndices().remove(model.getIndices().size() - 1);
                 model.incCurrentIndex();
                 addBtn.setEnabled(true);
                 listener.inputColumnSet();
@@ -279,17 +281,24 @@ public class PrototypeLane extends Composite {
      * @param index индекс выбранной колонки в входной таблице
      */
     public void selectColumn(int index) {
+        if(!model.isColumnChecked()){
+            model.setColumnChecked(true);
+            radioButton.setValue(true);
+        }
         int columnIndex = model.getCurrentIndex();
         if(model.getIndices().contains(index)){
-            AlertMessageBox messageBox = new AlertMessageBox("Ошибка", "Выбранная колонка, уже используется");
+            if(model.getIndices().get(model.getCurrentIndex()) != index) {
+                AlertMessageBox messageBox = new AlertMessageBox("Ошибка", "Выбранная колонка, уже используется");
+                messageBox.show();
+            }
             listBoxes.get(columnIndex).setSelectedIndex(0);
-            messageBox.show();
+            model.getIndices().set(columnIndex,0);
         }else {
             model.incCurrentIndex();
             listBoxes.get(columnIndex).setSelectedIndex(index);
-            model.getIndices().set(columnIndex, index); //TODO должна быть проверка какой индекс у listbox
-            listener.inputColumnSet();
+            model.getIndices().set(columnIndex, index);
         }
+        listener.inputColumnSet();
     }
 
     /**

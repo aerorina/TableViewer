@@ -102,4 +102,7 @@ public class PrototypeLaneModel {
         columnChangeListener = listener;
     }
 
+    public void setColumnChecked(boolean columnChecked) {
+        this.columnChecked = columnChecked;
+    }
 }
