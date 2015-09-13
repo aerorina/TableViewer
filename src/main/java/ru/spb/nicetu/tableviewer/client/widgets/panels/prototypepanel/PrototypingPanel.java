@@ -166,10 +166,10 @@ public class PrototypingPanel extends Composite {
                         // для дублирующихся колонок
                         int curColumnNum = 0;
                         // Есть ли ссылки на колонки входной таблицы в данной строке
-                        boolean containLinks = false;
+
                         for (PrototypeLane prototypeLane : prototypeLaneList) {
                             List<Integer> indices = prototypeLane.getModel().getIndices();
-
+                            boolean containLinks = false;
                             for (int i : indices) {
                                 if (i != 0) {
                                     String tableValue = getTableValueByIndex($(this), i);
