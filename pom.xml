@@ -29,11 +29,6 @@
             <version>3.1.0</version>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>6.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt-version}</version>
@@ -79,7 +74,7 @@
     <build>
         <!-- Generate compiled stuff in the folder used for developing mode -->
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
-
+        <finalName>tableviewer</finalName>
         <plugins>
 
             <!-- GWT Maven Plugin -->
@@ -91,7 +86,6 @@
                     <execution>
                         <goals>
                             <goal>compile</goal>
-                            <goal>test</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -118,6 +112,7 @@
                     </execution>
                 </executions>
                 <configuration>
+
                     <webappDirectory>${webappDirectory}</webappDirectory>
                 </configuration>
             </plugin>
@@ -126,12 +121,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 
         </plugins>
+
     </build>
 
 </project>

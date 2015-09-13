@@ -155,7 +155,11 @@ public class PrototypingPanel extends Composite {
         final int endRow = model.getEndRow();
         if (startRow < endRow) {
             HTML html = new HTML();
-            final StringBuilder stringBuilder = new StringBuilder();
+            for(PrototypeLane prototypeLane : prototypeLaneList){
+                List<Integer> indices = prototypeLane.getModel().getIndices();
+
+            }
+            /*final StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("<table>");
             final Map<Integer, Integer> links = model.getLinks();
             stringBuilder.append("<tr>");
@@ -191,8 +195,8 @@ public class PrototypingPanel extends Composite {
 
 
             });
-            stringBuilder.append("</table>");
-            html.setHTML(stringBuilder.toString());
+            stringBuilder.append("</table>");*/
+            //html.setHTML(stringBuilder.toString());
 
             if (tabPanel.getWidgetCount() == 2) {
                 tabPanel.remove(1);

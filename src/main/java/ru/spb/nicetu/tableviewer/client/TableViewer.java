@@ -102,7 +102,7 @@ public class TableViewer implements EntryPoint {
     private FormPanel createUploadForm() {
         final FormPanel formPanel = new FormPanel();
         formPanel.setMethod(FormPanel.METHOD_POST);
-        formPanel.setAction("/tableviewer/upload");
+        formPanel.setAction("tableviewer/upload");
         formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
         fileUpload = new FileUpload();
         fileUpload.setTitle("Выберите файл");
