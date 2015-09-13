@@ -5,7 +5,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.query.client.Function;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -128,8 +127,10 @@ public class PrototypingPanel extends Composite {
             }
         });
         rangePanel.add(rangeLabel);
+
         rangePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         rangePanel.add(textRange);
+        textRange.getStartTextBox().addStyleName("activeitem");
         return rangePanel;
     }
 
@@ -270,11 +271,11 @@ public class PrototypingPanel extends Composite {
                 highlightRows();
                 isSelectStartRange = !isSelectStartRange;
                 if(isSelectStartRange) {
-                    textRange.getEndTextBox().removeStyleName("activecolumn");
-                    textRange.getStartTextBox().addStyleName("activecolumn");
+                    textRange.getEndTextBox().removeStyleName("activeitem");
+                    textRange.getStartTextBox().addStyleName("activeitem");
                 }else {
-                    textRange.getStartTextBox().removeStyleName("activecolumn");
-                    textRange.getEndTextBox().removeStyleName("activecolumn");
+                    textRange.getStartTextBox().removeStyleName("activeitem");
+                    textRange.getEndTextBox().addStyleName("activeitem");
                 }
                 return true;
             }

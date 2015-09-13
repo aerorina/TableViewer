@@ -24,7 +24,7 @@
     background: #70d8ff;
 }
 
-.gwt-PrototypingPanel .activecolumn{
+.gwt-PrototypingPanel .activeitem {
     background: #e2f6ff;
 }
 
@@ -58,10 +58,7 @@
 .gwt-rangeTextLane {
     margin-left: 10px;
 }
-.gwt-rangeTextLane input[type=number]{
-    background: #70d8ff;
 
-}
 .gwt-rangeTextLane .gwt-Label{
     margin: 5px;
 }
@@ -122,3 +119,13 @@
 
 
 
+.rangeBox .activeitem {
+    background: #e2f6ff;
+}
+.rangeBox{
+    background: #70d8ff;
+
+}
+.rangeBox{
+    width: 60px;
+}

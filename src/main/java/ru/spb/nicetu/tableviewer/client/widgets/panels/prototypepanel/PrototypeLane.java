@@ -8,7 +8,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -82,9 +81,9 @@ public class PrototypeLane extends Composite {
                 for (int i = 0; i < listBoxes.size(); i++) {
                     ListBox listBox = listBoxes.get(i);
                     if(i == model.getCurrentIndex()) {
-                        listBox.addStyleName("activecolumn");
+                        listBox.addStyleName("activeitem");
                     }else {
-                        listBox.removeStyleName("activecolumn");
+                        listBox.removeStyleName("activeitem");
                     }
 
                 }

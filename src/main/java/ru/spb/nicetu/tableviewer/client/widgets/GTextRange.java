@@ -59,8 +59,9 @@ public class GTextRange extends Composite {
                 valueChanged();
             }
         });
+        box.setStyleName("rangeBox");
         box.getElement().setAttribute("type", "number");
-        box.setWidth("60px");
+
     }
 
     /**
@@ -113,6 +114,6 @@ public class GTextRange extends Composite {
     }
 
     public IntegerBox getEndTextBox() {
-        return startBox;
+        return endBox;
     }
 }
