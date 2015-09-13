@@ -92,7 +92,6 @@ public class PrototypingPanel extends Composite {
                 }
 
 
-
             });
             settingsPanel.add(prototypeLane);
             prototypeLaneList.add(prototypeLane);
@@ -155,12 +154,31 @@ public class PrototypingPanel extends Composite {
         final int endRow = model.getEndRow();
         if (startRow < endRow) {
             HTML html = new HTML();
-            for(PrototypeLane prototypeLane : prototypeLaneList){
-                List<Integer> indices = prototypeLane.getModel().getIndices();
-
+            List<Integer> list = createDuplicateColumnList();
+            findDuplicates(list);
+            StringBuilder stringBuilder = new StringBuilder("<table>");
+            stringBuilder.append("<tr>");
+            for (PrototypeLane prototypeLane : prototypeLaneList) {
+                PrototypeLaneModel prototypeModel = prototypeLane.getModel();
+                List<Integer> indices = prototypeModel.getIndices();
+                if(containsOnlyZeros(indices)){
+                    continue;
+                }
+                stringBuilder.append("<th>").append(prototypeModel.getColumnName()).append("</th>");
             }
-            /*final StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("<table>");
+            stringBuilder.append("</tr>");
+            stringBuilder.append("</table>");
+            html.setHTML(stringBuilder.toString());
+            /*for
+            for (PrototypeLane prototypeLane : prototypeLaneList) {
+                List<Integer> indices = prototypeLane.getModel().getIndices();
+                for(int i=0;i<model.getColumnsCount();i++){
+                    if(indices.contains(i)){
+                        list.set(i,list.get(i)+1);
+                    }
+                }
+            }*/
+            /*
             final Map<Integer, Integer> links = model.getLinks();
             stringBuilder.append("<tr>");
             final int[] num = new int[inputTableColumnCount];
@@ -194,9 +212,8 @@ public class PrototypingPanel extends Composite {
                 }
 
 
-            });
-            stringBuilder.append("</table>");*/
-            //html.setHTML(stringBuilder.toString());
+            });*/
+
 
             if (tabPanel.getWidgetCount() == 2) {
                 tabPanel.remove(1);
@@ -206,10 +223,54 @@ public class PrototypingPanel extends Composite {
             }
             tabPanel.selectTab(1);
 
-        } else {
+        }
+
+
+
+    else {
             AlertMessageBox messageBox = new AlertMessageBox("Ошибка", "Диапазон строк для обработки задан некорректно");
             messageBox.show();
 
+        }
+    }
+
+    /**
+     * Проверка на то , что список состоит только из 0
+     * @param indices список значений
+     * @return true, если список состоит только из 0
+     */
+    private boolean containsOnlyZeros(List<Integer> indices) {
+        for (Integer i: indices) {
+            if(i != 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Создать список с количество повторяющийхся колонок
+     * @return список с количеством колонок
+     */
+    private List<Integer> createDuplicateColumnList() {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < model.getColumnsCount(); i++) {
+            list.add(0);
+        }
+        return list;
+    }
+    /**
+     * Поиск одинаковых колонок, на которые ссылаются выходные колонки и заполнение списка количеством дубликатов
+     * @param list список с количеством встречающихся колонок в различных выходных колонках
+     */
+    private void findDuplicates(List<Integer> list) {
+        for (PrototypeLane prototypeLane : prototypeLaneList) {
+            List<Integer> indices = prototypeLane.getModel().getIndices();
+            for(int i=0;i<model.getColumnsCount();i++){
+                if(indices.contains(i)){
+                    list.set(i,list.get(i)+1);
+                }
+            }
         }
     }
 
@@ -269,10 +330,10 @@ public class PrototypingPanel extends Composite {
                 }
                 highlightRows();
                 isSelectStartRange = !isSelectStartRange;
-                if(isSelectStartRange) {
+                if (isSelectStartRange) {
                     textRange.getEndTextBox().removeStyleName("activeitem");
                     textRange.getStartTextBox().addStyleName("activeitem");
-                }else {
+                } else {
                     textRange.getStartTextBox().removeStyleName("activeitem");
                     textRange.getEndTextBox().addStyleName("activeitem");
                 }
@@ -334,7 +395,6 @@ public class PrototypingPanel extends Composite {
         $(TABLE_CSS_CLASS + " tr td").removeClass("selcolumn");
         for (final int index : model.getIndices()) {
             if (index != 0) {
-                this.model.putLinkValue(outputColumn, index);
                 $(TABLE_CSS_CLASS + " tr").each(new Function() {
                     int val;
 
@@ -362,8 +422,6 @@ public class PrototypingPanel extends Composite {
 
                     }
                 });
-            } else {
-                this.model.removeLinkValue(outputColumn);
             }
         }
     }

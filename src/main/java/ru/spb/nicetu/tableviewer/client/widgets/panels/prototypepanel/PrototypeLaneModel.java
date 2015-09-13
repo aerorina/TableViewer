@@ -105,4 +105,8 @@ public class PrototypeLaneModel {
     public void setColumnChecked(boolean columnChecked) {
         this.columnChecked = columnChecked;
     }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
 }

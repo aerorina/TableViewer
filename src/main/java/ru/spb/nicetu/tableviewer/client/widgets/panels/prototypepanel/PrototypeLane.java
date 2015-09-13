@@ -141,9 +141,10 @@ public class PrototypeLane extends Composite {
      */
     private ListBox createListBox() {
         final ListBox listBox = new ListBox();
+        final int listBoxIndex = listBoxes.size();
         listBox.addChangeHandler(new ChangeHandler() {
             public void onChange(ChangeEvent event) {
-                selectColumn(listBox.getSelectedIndex());
+                selectColumn(listBox.getSelectedIndex(),listBoxIndex);
             }
         });
 
@@ -151,6 +152,8 @@ public class PrototypeLane extends Composite {
         listBoxes.add(listBox);
         return listBox;
     }
+
+
 
     /**
      * Создать кнопку для добавления новой строки в макет таблицы
@@ -309,7 +312,19 @@ public class PrototypeLane extends Composite {
         }
         listener.laneSelected();
     }
-
+    /**
+     * Выбор колонки для листбокса с индексом
+     * @param selectedIndex номер значения
+     * @param listBoxIndex индекс листбокса
+     */
+    private void selectColumn(int selectedIndex, int listBoxIndex) {
+        //Сохраняем текущий индекс так как не хотим его менять
+        int curIndex = model.getCurrentIndex();
+        model.setCurrentIndex(listBoxIndex);
+        selectColumn(selectedIndex);
+        //Возвращаем обратно
+        model.setCurrentIndex(curIndex);
+    }
     /**
      * @return модель компонента
      */

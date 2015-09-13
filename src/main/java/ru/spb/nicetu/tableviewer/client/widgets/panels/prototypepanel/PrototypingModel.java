@@ -11,12 +11,7 @@ import java.util.Map;
  */
 public class PrototypingModel {
 
-    /**
-     * Определяет связь между выходной таблицей и обрабатываемым файлом
-     * Ключом является номер столбца выходной таблицы
-     * Значением является номер столбцы входной таблицы
-     */
-    private Map<Integer, Integer> links = new HashMap<Integer, Integer>();
+
     /**
      * Список с именами колонок выходной таблицы
      */
@@ -86,28 +81,5 @@ public class PrototypingModel {
         return columnsNames.size();
     }
 
-    /**
-     * Добавить значение связи выходной таблицы со входной
-     * @param outputIndex колонка выходной таблицы
-     * @param inputIndex колонка входной таблицы
-     */
-    public void putLinkValue(int outputIndex, int inputIndex){
-        links.put(outputIndex, inputIndex);
-    }
 
-    /**
-     * Получить список связей
-     * @return список связей входной и выходной таблиц
-     */
-    public Map<Integer,Integer> getLinks() {
-        return links;
-    }
-
-    /**
-     * Удалить значение связи
-     * @param outputColumn колонка выходной таблицы
-     */
-    public void removeLinkValue(int outputColumn) {
-        links.remove(outputColumn);
-    }
 }
