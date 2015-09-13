@@ -154,67 +154,47 @@ public class PrototypingPanel extends Composite {
         final int endRow = model.getEndRow();
         if (startRow < endRow) {
             HTML html = new HTML();
-            List<Integer> list = createDuplicateColumnList();
-            findDuplicates(list);
-            StringBuilder stringBuilder = new StringBuilder("<table>");
-            stringBuilder.append("<tr>");
-            for (PrototypeLane prototypeLane : prototypeLaneList) {
-                PrototypeLaneModel prototypeModel = prototypeLane.getModel();
-                List<Integer> indices = prototypeModel.getIndices();
-                if(containsOnlyZeros(indices)){
-                    continue;
-                }
-                stringBuilder.append("<th>").append(prototypeModel.getColumnName()).append("</th>");
-            }
-            stringBuilder.append("</tr>");
-            stringBuilder.append("</table>");
-            html.setHTML(stringBuilder.toString());
-            /*for
-            for (PrototypeLane prototypeLane : prototypeLaneList) {
-                List<Integer> indices = prototypeLane.getModel().getIndices();
-                for(int i=0;i<model.getColumnsCount();i++){
-                    if(indices.contains(i)){
-                        list.set(i,list.get(i)+1);
-                    }
-                }
-            }*/
-            /*
-            final Map<Integer, Integer> links = model.getLinks();
-            stringBuilder.append("<tr>");
-            final int[] num = new int[inputTableColumnCount];
-            for (Integer key : links.keySet()) {
-                stringBuilder.append("<th>").append(model.getColumnName(key)).append("</th>");
-
-                num[links.get(key)]++;
-            }
-            stringBuilder.append("</tr>");
+            final List<Integer> duplicateList = createDuplicateColumnList();
+            findDuplicates(duplicateList);
+            final StringBuilder stringBuilder = new StringBuilder("<table>");
+            writeTableColumns(stringBuilder);
             $(TABLE_CSS_CLASS + " tr").each(new Function() {
                 @Override
                 public void f() {
                     if ($(this).index() >= startRow - 1 && $(this).index() < endRow) {
                         stringBuilder.append("<tr>");
+                        // для дублирующихся колонок
                         int curColumnNum = 0;
-                        for (Integer key : links.keySet()) {
-                            Integer index = links.get(key);
-                            if (index != 0) {
-                                int columnNum = num[index];
-                                String tableValue = getTableValueByIndex($(this), index);
-                                if (columnNum > 1) {
-                                    tableValue = tableValue.split(" ")[curColumnNum++];
+                        // Есть ли ссылки на колонки входной таблицы в данной строке
+                        boolean containLinks = false;
+                        for (PrototypeLane prototypeLane : prototypeLaneList) {
+                            List<Integer> indices = prototypeLane.getModel().getIndices();
+
+                            for (int i : indices) {
+                                if (i != 0) {
+                                    String tableValue = getTableValueByIndex($(this), i);
+                                    // Несколько столбцов ссылаются на одну колонку входной таблицы
+                                    if (duplicateList.get(i) > 1) {
+                                        tableValue = tableValue.split(" ")[curColumnNum++];
+                                    }
+                                    stringBuilder.append("<td>");
+                                    containLinks = true;
+                                    stringBuilder.append(tableValue).append(" ");
                                 }
-                                stringBuilder.append("<td>").append(tableValue).append("</td>");
                             }
-
+                            if (containLinks) {
+                                stringBuilder.append("</td>");
+                            }
                         }
-
                         stringBuilder.append("</tr>");
                     }
                 }
 
 
-            });*/
+            });
 
-
+            stringBuilder.append("</table>");
+            html.setHTML(stringBuilder.toString());
             if (tabPanel.getWidgetCount() == 2) {
                 tabPanel.remove(1);
             }
@@ -223,11 +203,7 @@ public class PrototypingPanel extends Composite {
             }
             tabPanel.selectTab(1);
 
-        }
-
-
-
-    else {
+        } else {
             AlertMessageBox messageBox = new AlertMessageBox("Ошибка", "Диапазон строк для обработки задан некорректно");
             messageBox.show();
 
@@ -235,13 +211,32 @@ public class PrototypingPanel extends Composite {
     }
 
     /**
+     * Вывод колонок таблицы
+     *
+     * @param stringBuilder буфер куда выводится таблица
+     */
+    private void writeTableColumns(StringBuilder stringBuilder) {
+        stringBuilder.append("<tr>");
+        for (PrototypeLane prototypeLane : prototypeLaneList) {
+            PrototypeLaneModel prototypeModel = prototypeLane.getModel();
+            List<Integer> indices = prototypeModel.getIndices();
+            if (containsOnlyZeros(indices)) {
+                continue;
+            }
+            stringBuilder.append("<th>").append(prototypeModel.getColumnName()).append("</th>");
+        }
+        stringBuilder.append("</tr>");
+    }
+
+    /**
      * Проверка на то , что список состоит только из 0
+     *
      * @param indices список значений
      * @return true, если список состоит только из 0
      */
     private boolean containsOnlyZeros(List<Integer> indices) {
-        for (Integer i: indices) {
-            if(i != 0){
+        for (Integer i : indices) {
+            if (i != 0) {
                 return false;
             }
         }
@@ -250,6 +245,7 @@ public class PrototypingPanel extends Composite {
 
     /**
      * Создать список с количество повторяющийхся колонок
+     *
      * @return список с количеством колонок
      */
     private List<Integer> createDuplicateColumnList() {
@@ -259,16 +255,18 @@ public class PrototypingPanel extends Composite {
         }
         return list;
     }
+
     /**
      * Поиск одинаковых колонок, на которые ссылаются выходные колонки и заполнение списка количеством дубликатов
+     *
      * @param list список с количеством встречающихся колонок в различных выходных колонках
      */
     private void findDuplicates(List<Integer> list) {
         for (PrototypeLane prototypeLane : prototypeLaneList) {
             List<Integer> indices = prototypeLane.getModel().getIndices();
-            for(int i=0;i<model.getColumnsCount();i++){
-                if(indices.contains(i)){
-                    list.set(i,list.get(i)+1);
+            for (int i = 0; i < model.getColumnsCount(); i++) {
+                if (indices.contains(i)) {
+                    list.set(i, list.get(i) + 1);
                 }
             }
         }
