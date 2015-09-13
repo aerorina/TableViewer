@@ -177,8 +177,10 @@ public class PrototypingPanel extends Composite {
                                     if (duplicateList.get(i) > 1) {
                                         tableValue = tableValue.split(" ")[curColumnNum++];
                                     }
-                                    stringBuilder.append("<td>");
-                                    containLinks = true;
+                                    if(!containLinks) {
+                                        stringBuilder.append("<td>");
+                                        containLinks = true;
+                                    }
                                     stringBuilder.append(tableValue).append(" ");
                                 }
                             }
