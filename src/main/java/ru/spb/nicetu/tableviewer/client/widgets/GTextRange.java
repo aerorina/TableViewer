@@ -2,6 +2,11 @@ package ru.spb.nicetu.tableviewer.client.widgets;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IntegerBox;
@@ -14,6 +19,7 @@ import ru.spb.nicetu.tableviewer.client.widgets.listeners.DefaultChangeListener;
  * Для задания стилей самого компонента используйте класс <b>.gwt-rangeTextLane</b><br>
  * Для задания стилей для полей ввода используйте класс <b>.gwt-rangeTextLane input[type=number]</b><br>
  * Для задания стилей для разделителя используйте класс <b>.gwt-rangeTextLane .gwt-Label</b><br>
+ *
  * @author rlapin
  */
 public class GTextRange extends Composite {
@@ -39,6 +45,7 @@ public class GTextRange extends Composite {
 
     /**
      * Задать слушателя для события изменение значения
+     *
      * @param changeListener
      */
     public void setChangeListener(ChangeListener changeListener) {
@@ -46,9 +53,9 @@ public class GTextRange extends Composite {
     }
 
     private void setupWidget(IntegerBox box) {
-        box.addChangeHandler(new ChangeHandler() {
+        box.addKeyUpHandler(new KeyUpHandler() {
             @Override
-            public void onChange(ChangeEvent changeEvent) {
+            public void onKeyUp(KeyUpEvent keyUpEvent) {
                 valueChanged();
             }
         });
@@ -80,22 +87,32 @@ public class GTextRange extends Composite {
             return 0;
         }
     }
+
     /**
      * Задать левую границу диапазона
+     *
      * @param value значение левой границы диапазона
      */
-    public void setStartValue(int value){
+    public void setStartValue(int value) {
         startBox.setValue(value);
         valueChanged();
     }
 
     /**
      * Задать правую границу диапазона
+     *
      * @param value значение правой границы диапазона
      */
-    public void setEndValue(int value){
+    public void setEndValue(int value) {
         endBox.setValue(value);
         valueChanged();
     }
 
+    public IntegerBox getStartTextBox() {
+        return startBox;
+    }
+
+    public IntegerBox getEndTextBox() {
+        return startBox;
+    }
 }

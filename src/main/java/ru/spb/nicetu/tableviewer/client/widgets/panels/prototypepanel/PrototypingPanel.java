@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.query.client.Function;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -123,6 +124,7 @@ public class PrototypingPanel extends Composite {
             public void onChanged() {
                 model.setStartRow(textRange.getStartValue());
                 model.setEndRow(textRange.getEndValue());
+                highlightRows();
             }
         });
         rangePanel.add(rangeLabel);
@@ -260,37 +262,41 @@ public class PrototypingPanel extends Composite {
             @Override
             public boolean f(Event e) {
                 GQuery parent = $(this).parent();
-                rowSelected(parent.index());
+                if (isSelectStartRange) {
+                    textRange.setStartValue(parent.index() + 1);
+                } else {
+                    textRange.setEndValue(parent.index() + 1);
+                }
+                highlightRows();
+                isSelectStartRange = !isSelectStartRange;
+                if(isSelectStartRange) {
+                    textRange.getEndTextBox().removeStyleName("activecolumn");
+                    textRange.getStartTextBox().addStyleName("activecolumn");
+                }else {
+                    textRange.getStartTextBox().removeStyleName("activecolumn");
+                    textRange.getEndTextBox().removeStyleName("activecolumn");
+                }
                 return true;
             }
         });
+
     }
 
     /**
-     * Выбрана строка таблицы
-     *
-     * @param index номер строки
+     * Выделить строки таблицы
      */
-    private void rowSelected(int index) {
+    private void highlightRows() {
 
-        if (isSelectStartRange) {
-            int oldValue = textRange.getStartValue();
-            if (oldValue != index + 1) {
-//                $(TABLE_CSS_CLASS + " tr").eq(oldValue).removeClass("selrow");
-                textRange.setStartValue(index + 1);
-//                $(TABLE_CSS_CLASS + " tr").eq(index + 1).addClass("selrow");
-            }
-
-        } else {
-            int oldValue = textRange.getEndValue();
-
-            if (oldValue != index + 1) {
-//                $(TABLE_CSS_CLASS + " tr").eq(oldValue).removeClass("selrow");
-                textRange.setEndValue(index + 1);
-//                $(TABLE_CSS_CLASS + " tr").eq(index + 1).addClass("selrow");
+        final int startRow = model.getStartRow();
+        final int endRow = model.getEndRow();
+        $(TABLE_CSS_CLASS + " tr").removeClass("selrow");
+        if (startRow < endRow) {
+            for (int i = startRow; i <= endRow; i++) {
+                $(TABLE_CSS_CLASS + " tr").eq(i).addClass("selrow");
             }
         }
-        isSelectStartRange = !isSelectStartRange;
+
+
     }
 
     /**
