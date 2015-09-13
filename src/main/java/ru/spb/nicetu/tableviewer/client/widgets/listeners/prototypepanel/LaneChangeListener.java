@@ -10,9 +10,5 @@ public interface LaneChangeListener {
      */
     void laneSelected();
 
-    /**
-     * Изменена колонка входной таблицы
-     */
-    void inputColumnSet();
 
 }

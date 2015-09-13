@@ -80,9 +80,9 @@ public class PrototypeLane extends Composite {
             public void onChanged() {
                 for (int i = 0; i < listBoxes.size(); i++) {
                     ListBox listBox = listBoxes.get(i);
-                    if(i == model.getCurrentIndex()) {
+                    if (i == model.getCurrentIndex()) {
                         listBox.addStyleName("activeitem");
-                    }else {
+                    } else {
                         listBox.removeStyleName("activeitem");
                     }
 
@@ -109,7 +109,7 @@ public class PrototypeLane extends Composite {
 
         radioButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                listener.laneSelected();
+                selectLane();
             }
         });
         final ListBox listBox = createListBox();
@@ -119,8 +119,7 @@ public class PrototypeLane extends Composite {
 
         focusPanel.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                radioButton.setValue(true);
-                listener.laneSelected();
+                selectLane();
             }
         });
         columnLane.add(focusPanel);
@@ -185,7 +184,10 @@ public class PrototypeLane extends Composite {
                 delBtn.setEnabled(true);
                 setOpacity(delBtn, 0.3);
                 model.getIndices().add(0);
+                radioButton.setValue(true);
+                model.setColumnChecked(true);
                 model.setCurrentIndexToLast();
+                selectLane();
                 if (listBoxes.size() == MAX_LIST_BOX_COUNT - 1) {
                     button.setEnabled(false);
                     setOpacity(button, 0.1);
@@ -239,7 +241,7 @@ public class PrototypeLane extends Composite {
                 model.getIndices().remove(model.getIndices().size() - 1);
                 model.incCurrentIndex();
                 addBtn.setEnabled(true);
-                listener.inputColumnSet();
+                selectLane();
                 setOpacity(addBtn, 0.3);
                 if (size == 1) {
                     button.setEnabled(false);
@@ -248,6 +250,15 @@ public class PrototypeLane extends Composite {
             }
         });
         return button;
+    }
+
+    /**
+     * Активировать данную строку
+     */
+    private void selectLane() {
+        radioButton.setValue(true);
+        model.setColumnChecked(true);
+        listener.laneSelected();
     }
 
     /**
@@ -281,8 +292,7 @@ public class PrototypeLane extends Composite {
      */
     public void selectColumn(int index) {
         if(!model.isColumnChecked()){
-            model.setColumnChecked(true);
-            radioButton.setValue(true);
+            selectLane();
         }
         int columnIndex = model.getCurrentIndex();
         if(model.getIndices().contains(index)){
@@ -297,7 +307,7 @@ public class PrototypeLane extends Composite {
             listBoxes.get(columnIndex).setSelectedIndex(index);
             model.getIndices().set(columnIndex, index);
         }
-        listener.inputColumnSet();
+        listener.laneSelected();
     }
 
     /**

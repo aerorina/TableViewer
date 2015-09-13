@@ -82,8 +82,6 @@ public class PrototypingPanel extends Composite {
         inputTableColumnCount = $(TABLE_CSS_CLASS + " th").length() - 1;
         prototypeLaneList = new ArrayList<PrototypeLane>();
         for (int i = 0; i < model.getColumnsCount(); i++) {
-
-//            lane.add(createDelBtn());
             final PrototypeLaneModel prototypeLaneModel = new PrototypeLaneModel(this.model.getColumnName(i), i == 0, inputTableColumnCount);
             PrototypeLane prototypeLane = new PrototypeLane(prototypeLaneModel);
             final int index = i;
@@ -93,10 +91,7 @@ public class PrototypingPanel extends Composite {
                     changeItemHandler(index);
                 }
 
-                @Override
-                public void inputColumnSet() {
-                    changeItemHandler(index);
-                }
+
 
             });
             settingsPanel.add(prototypeLane);

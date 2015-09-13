@@ -10,10 +10,7 @@ public class DefaultLaneChangeListener implements LaneChangeListener{
 
     }
 
-    @Override
-    public void inputColumnSet() {
 
-    }
 
 
 }
