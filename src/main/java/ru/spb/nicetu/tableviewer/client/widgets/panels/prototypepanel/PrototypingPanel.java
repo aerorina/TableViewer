@@ -1,5 +1,12 @@
 package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
 
+import static com.google.gwt.query.client.GQuery.$;
+
+
+
+
+
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.query.client.Function;
@@ -14,15 +21,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
+import java.util.ArrayList;
+import java.util.List;
 import ru.spb.nicetu.tableviewer.client.widgets.GTextRange;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.LaneChangeListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.google.gwt.query.client.GQuery.$;
 
 /**
  * Компонент для настройки макета таблицы
@@ -251,7 +254,7 @@ public class PrototypingPanel extends Composite {
      * @return список с количеством колонок
      */
     private List<Integer> createDuplicateColumnList() {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < model.getColumnsCount(); i++) {
             list.add(0);
         }
