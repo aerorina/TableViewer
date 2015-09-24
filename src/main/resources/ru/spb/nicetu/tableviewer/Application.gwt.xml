@@ -20,6 +20,8 @@
   <entry-point class='ru.spb.nicetu.tableviewer.client.TableViewer'/>
   <servlet path='/xlsviewer_service' class='ru.spb.nicetu.tableviewer.server.XlsViewerServiceImpl'/>
   <servlet path='/upload' class='ru.spb.nicetu.tableviewer.server.FileUploadServlet'/>
+  <servlet path="/ExportTableService"
+           class="ru.spb.nicetu.tableviewer.server.ExportTableServiceImpl"/>
   <!-- Specify the paths for translatable code                    -->
 
 </module>

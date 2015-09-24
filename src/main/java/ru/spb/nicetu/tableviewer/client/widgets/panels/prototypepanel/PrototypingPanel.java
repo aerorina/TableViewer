@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.query.client.Function;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import java.util.ArrayList;
 import java.util.List;
+import ru.spb.nicetu.tableviewer.client.ExportTableService;
 import ru.spb.nicetu.tableviewer.client.widgets.GTextRange;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.LaneChangeListener;
@@ -199,6 +201,7 @@ public class PrototypingPanel extends Composite {
             });
 
             stringBuilder.append("</table>");
+
             html.setHTML(stringBuilder.toString());
             if (tabPanel.getWidgetCount() == 2) {
                 tabPanel.remove(1);
@@ -207,6 +210,16 @@ public class PrototypingPanel extends Composite {
                 tabPanel.add(html, "Выборка");
             }
             tabPanel.selectTab(1);
+
+            ExportTableService.App.getInstance().exportTable(stringBuilder.toString(), new AsyncCallback<Void>() {
+                @Override public void onFailure(Throwable caught) {
+
+                }
+
+                @Override public void onSuccess(Void result) {
+
+                }
+            });
 
         } else {
             AlertMessageBox messageBox = new AlertMessageBox("Ошибка", "Диапазон строк для обработки задан некорректно");

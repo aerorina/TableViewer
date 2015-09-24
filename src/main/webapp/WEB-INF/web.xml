@@ -9,7 +9,14 @@
         <servlet-name>XlsViewerService</servlet-name>
         <url-pattern>/tableviewer/xlsviewer_service</url-pattern>
     </servlet-mapping>
-
+    <servlet>
+        <servlet-name>ExportTableService</servlet-name>
+        <servlet-class>ru.spb.nicetu.tableviewer.server.ExportTableServiceImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ExportTableService</servlet-name>
+        <url-pattern>/tableviewer/ExportTableService</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>FileUploadServlet</servlet-name>
         <servlet-class>ru.spb.nicetu.tableviewer.server.FileUploadServlet</servlet-class>
@@ -34,10 +41,9 @@
     </context-param>
 
 
-
-  <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>tableviewer.html</welcome-file>
-  </welcome-file-list>
+    <!-- Default page to serve -->
+    <welcome-file-list>
+        <welcome-file>tableviewer.html</welcome-file>
+    </welcome-file-list>
 
 </web-app>
