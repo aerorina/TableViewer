@@ -60,6 +60,7 @@ public class PrototypingPanel extends Composite {
     final private PrototypingModel model;
     private List<PrototypeLane> prototypeLaneList;
     private TabPanel tabPanel;
+    final private Button saveButton;
     /**
      * Заголовок панели
      */
@@ -73,6 +74,7 @@ public class PrototypingPanel extends Composite {
         this.model = model;
         this.tabPanel = tabPanel;
         this.title = title;
+        this.saveButton = createSaveButton(true);
         initComponents();
         initTableListeners();
     }
@@ -103,6 +105,7 @@ public class PrototypingPanel extends Composite {
         }
         settingsPanel.add(createRangePanel());
         settingsPanel.add(createPerformButton());
+//        settingsPanel.add(saveButton);
 
         initWidget(settingsPanel);
     }
@@ -148,6 +151,23 @@ public class PrototypingPanel extends Composite {
             }
         });
         return btnPerform;
+    }
+
+    /**
+     * Создать кнопку для сохранения выборки в файл
+     *
+     * @return gwt-кнопка
+     */
+    private Button createSaveButton(boolean enabled) {
+        Button btnSave = new Button("Сохранить выборку в файл");
+        btnSave.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                processInputFile();
+            }
+        });
+        btnSave.setEnabled(enabled);
+        return btnSave;
     }
 
     /**
@@ -207,17 +227,18 @@ public class PrototypingPanel extends Composite {
                 tabPanel.remove(1);
             }
             if (tabPanel.getWidgetCount() == 1) {
-                tabPanel.add(html, "Выборка");
+                VerticalPanel tableVerticalPanel = new VerticalPanel();
+                tableVerticalPanel.add(html);
+                tabPanel.add(tableVerticalPanel, "Выборка");
             }
             tabPanel.selectTab(1);
 
             ExportTableService.App.getInstance().exportTable(stringBuilder.toString(), new AsyncCallback<Void>() {
                 @Override public void onFailure(Throwable caught) {
-
                 }
 
                 @Override public void onSuccess(Void result) {
-
+                    ((VerticalPanel) tabPanel.getWidget(1)).add(saveButton);
                 }
             });
 
