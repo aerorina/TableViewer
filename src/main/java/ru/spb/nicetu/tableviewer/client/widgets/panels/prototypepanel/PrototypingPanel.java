@@ -2,6 +2,7 @@ package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
 
 import static com.google.gwt.query.client.GQuery.$;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.query.client.Function;
@@ -152,7 +153,7 @@ public class PrototypingPanel extends Composite {
         btnSave.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Window.open("http://127.0.0.1:8888/tableviewer/DownloadFileServlet", "_blank", "");
+                Window.open(GWT.getModuleBaseURL()+"DownloadFileServlet", "_self", "enabled");
             }
         });
         btnSave.setEnabled(enabled);
