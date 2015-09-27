@@ -2,25 +2,14 @@ package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
 
 import static com.google.gwt.query.client.GQuery.$;
 
-
-
-
-
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.query.client.Function;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +17,7 @@ import ru.spb.nicetu.tableviewer.client.ExportTableService;
 import ru.spb.nicetu.tableviewer.client.widgets.GTextRange;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.LaneChangeListener;
+import ru.spb.nicetu.tableviewer.server.DownloadFileServlet;
 
 /**
  * Компонент для настройки макета таблицы
@@ -105,7 +95,6 @@ public class PrototypingPanel extends Composite {
         }
         settingsPanel.add(createRangePanel());
         settingsPanel.add(createPerformButton());
-//        settingsPanel.add(saveButton);
 
         initWidget(settingsPanel);
     }
@@ -163,7 +152,8 @@ public class PrototypingPanel extends Composite {
         btnSave.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                processInputFile();
+                // DownloadFileServlet
+                Window.open("http://localhost:8080/tableviewer/DownloadFileServlet", "_blank", "enabled");
             }
         });
         btnSave.setEnabled(enabled);
