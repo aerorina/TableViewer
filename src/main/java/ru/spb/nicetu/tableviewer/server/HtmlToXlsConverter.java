@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import java.util.logging.Logger;
 
@@ -42,6 +41,7 @@ public class HtmlToXlsConverter {
 
     /**
      * Конвертировать html таблицу в xls таблицу
+     *
      * @return xls таблицу
      */
     public Workbook convert() {
@@ -56,8 +56,8 @@ public class HtmlToXlsConverter {
             htmlTable = htmlTable.substring(endIndex + TR_END_TAG.length());
         }
 
-        if(isAutoSize) {
-            if(nRow>0) {
+        if (isAutoSize) {
+            if (nRow > 0) {
                 Row row = workbook.getSheetAt(0).getRow(0);
                 for (int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
                     sheet.autoSizeColumn(colNum);
@@ -95,8 +95,9 @@ public class HtmlToXlsConverter {
     private String getNextCellTag(String htmlRow) {
         int index1 = htmlRow.indexOf(TD_TAG);
         int index2 = htmlRow.indexOf(TH_TAG);
-        return (index1 == -1?TH_TAG: index2==-1?TD_TAG: index1<index2?TD_TAG:TH_TAG);
+        return (index1 == -1 ? TH_TAG : index2 == -1 ? TD_TAG : index1 < index2 ? TD_TAG : TH_TAG);
     }
+
     /**
      * @param htmlRow html строка
      * @return значение следующего закрывающего тэга ячейки (/tr или /th)
@@ -104,30 +105,31 @@ public class HtmlToXlsConverter {
     private String getNextCellEndTag(String htmlRow) {
         int index1 = htmlRow.indexOf(TD_END_TAG);
         int index2 = htmlRow.indexOf(TH_END_TAG);
-        return (index1 == -1?TH_END_TAG: index2==-1?TD_END_TAG: index1<index2?TD_END_TAG:TH_END_TAG);
+        return (index1 == -1 ? TH_END_TAG : index2 == -1 ? TD_END_TAG : index1 < index2 ? TD_END_TAG : TH_END_TAG);
     }
 
     /**
      * Конвертировать html ячейку(td или th) в xls ячейку и добавить в строку
+     *
      * @param row      xls строка
      * @param htmlCell html ячейка
      * @param nCell    номер ячейки на листе
      */
     private void handleCell(Row row, String htmlCell, int nCell) {
         htmlCell = htmlCell.trim();
-        if(htmlCell.contains(NO_BR_TAG)){
-            int startIndex = htmlCell.indexOf(NO_BR_TAG)+NO_BR_TAG.length();
+        if (htmlCell.contains(NO_BR_TAG)) {
+            int startIndex = htmlCell.indexOf(NO_BR_TAG) + NO_BR_TAG.length();
             int endIndex = htmlCell.indexOf(NO_BR_END_TAG);
-            htmlCell = htmlCell.substring(startIndex,endIndex);
+            htmlCell = htmlCell.substring(startIndex, endIndex);
         }
         Cell cell = row.createCell(nCell);
         CellStyle cellStyle = cell.getCellStyle();
         cellStyle.setAlignment(CellStyle.ALIGN_CENTER);
-        try{
+        try {
             double value = Double.parseDouble(htmlCell);
             cell.setCellValue(value);
-        }catch (NumberFormatException numberFormatException){
-            LOGGER.info("Значение:" +htmlCell+" не может быть преобразовано в числовое значение");
+        } catch (NumberFormatException numberFormatException) {
+            LOGGER.info("Значение:" + htmlCell + " не может быть преобразовано в числовое значение");
             cell.setCellValue(htmlCell);
         }
 
