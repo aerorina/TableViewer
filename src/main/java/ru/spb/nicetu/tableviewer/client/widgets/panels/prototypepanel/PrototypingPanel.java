@@ -1,7 +1,5 @@
 package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
 
-import static com.google.gwt.query.client.GQuery.$;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -10,15 +8,24 @@ import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
-import java.util.ArrayList;
-import java.util.List;
 import ru.spb.nicetu.tableviewer.client.ExportTableService;
 import ru.spb.nicetu.tableviewer.client.widgets.GTextRange;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.ChangeListener;
 import ru.spb.nicetu.tableviewer.client.widgets.listeners.prototypepanel.LaneChangeListener;
-import ru.spb.nicetu.tableviewer.server.DownloadFileServlet;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.gwt.query.client.GQuery.$;
 
 /**
  * Компонент для настройки макета таблицы
@@ -167,7 +174,7 @@ public class PrototypingPanel extends Composite {
 
         final int startRow = model.getStartRow();
         final int endRow = model.getEndRow();
-        if (startRow < endRow) {
+        if (startRow <= endRow) {
             HTML html = new HTML();
             final List<Integer> duplicateList = createDuplicateColumnList();
             findDuplicates(duplicateList);
@@ -378,7 +385,7 @@ public class PrototypingPanel extends Composite {
         final int startRow = model.getStartRow();
         final int endRow = model.getEndRow();
         $(TABLE_CSS_CLASS + " tr").removeClass("selrow");
-        if (startRow < endRow) {
+        if (startRow <= endRow) {
             for (int i = startRow; i <= endRow; i++) {
                 $(TABLE_CSS_CLASS + " tr").eq(i).addClass("selrow");
             }

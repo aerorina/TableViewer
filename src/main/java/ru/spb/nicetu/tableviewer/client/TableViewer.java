@@ -32,9 +32,9 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import ru.spb.nicetu.tableviewer.client.resources.Resources;
 import ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel.PrototypingModel;
 import ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel.PrototypingPanel;
-import ru.spb.nicetu.tableviewer.client.resources.Resources;
 
 /**
  * Начальная точка приложения
@@ -69,6 +69,7 @@ public class TableViewer implements EntryPoint {
         final ScrollPanel scrollPanel = new ScrollPanel(tabPanel);
 //        final ScrollPanel scrollPanel = new ScrollPanel(tableHTML);
         scrollPanel.setHeight("600px");
+        scrollPanel.setWidth("800px");
 
         final Label label = new Label("Выберите файл (xls/xlsx/ods): ");
         hp.add(label);
@@ -116,11 +117,8 @@ public class TableViewer implements EntryPoint {
         });
 
 
-        // Add an event handler to the form.
         formPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
             public void onSubmit(FormPanel.SubmitEvent event) {
-                // This event is fired just before the form is submitted. We can take
-                // this opportunity to perform validation.
                 String filePathStr = fileUpload.getFilename();
                 if (!filePathStr.toLowerCase().endsWith("xls") && !filePathStr.toLowerCase().endsWith("xlsx") &&
                         !filePathStr.toLowerCase().endsWith("ods")) {
@@ -132,13 +130,8 @@ public class TableViewer implements EntryPoint {
         });
         formPanel.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
             public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
-                // When the form submission is successfully completed, this event is
-                // fired. Assuming the service returned a response of type text/html,
-                // we can get the result text here (see the FormPanel documentation for
-                // further explanation).
                 tableHTML.setHTML("");
                 tabPanel.setVisible(false);
-
                 actionLabel.setStyleName("processLabel");
                 if (prototypingPanel != null) {
                     mainPanel.remove(prototypingPanel);
@@ -156,8 +149,6 @@ public class TableViewer implements EntryPoint {
         return formPanel;
     }
     private void createHTMLTable() {
-
-
         actionLabel.setStyleName("processLabel");
         actionLabel.setHTML("Идет построение формы...");
         XlsViewerService.App.getInstance().buildHtml(filePath, false, new AsyncCallback<String>() {
@@ -165,7 +156,6 @@ public class TableViewer implements EntryPoint {
                 actionLabel.setStyleName("errorLabel");
                 actionLabel.setHTML("Ошибка при построении формы: " + (caught != null ? caught.getMessage() : "смотрите журнал работы сервера"));
             }
-
             public void onSuccess(String result) {
                 if (result == null) {
                     actionLabel.setStyleName("errorLabel");
@@ -177,7 +167,6 @@ public class TableViewer implements EntryPoint {
                     tableHTML.setHTML(result);
                     tabPanel.selectTab(0);
                     tabPanel.setVisible(true);
-                    tabPanel.setWidth("600px");
                     prototypingPanel = new PrototypingPanel(new PrototypingModel(COLUMN_NAMES), tabPanel,"Укажите столбцы с данными для загрузки");
                     mainPanel.add(prototypingPanel);
                 }
