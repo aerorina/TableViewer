@@ -25,6 +25,16 @@
         <servlet-name>FileUploadServlet</servlet-name>
         <url-pattern>/tableviewer/upload</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <description>This servlet sends file to client</description>
+        <display-name>DownloadFileServlet</display-name>
+        <servlet-name>DownloadFileServlet</servlet-name>
+        <servlet-class>ru.spb.nicetu.tableviewer.server.DownloadFileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadFileServlet</servlet-name>
+        <url-pattern>/tableviewer/DownloadFileServlet</url-pattern>
+    </servlet-mapping>
     <context-param>
         <description>Location to store uploaded file</description>
         <param-name>file-upload</param-name>

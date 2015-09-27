@@ -152,8 +152,7 @@ public class PrototypingPanel extends Composite {
         btnSave.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                // DownloadFileServlet
-                Window.open("http://localhost:8080/tableviewer/DownloadFileServlet", "_blank", "enabled");
+                Window.open("http://127.0.0.1:8888/tableviewer/DownloadFileServlet", "_blank", "enabled");
             }
         });
         btnSave.setEnabled(enabled);
