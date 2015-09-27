@@ -22,7 +22,7 @@ public class DownloadFileServlet  extends HttpServlet {
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
-        String filePath = getServletContext().getRealPath("") + "/output.html";
+        String filePath = getServletContext().getRealPath("") + "/output.xls";
         File downloadFile = new File(filePath);
         FileInputStream inStream = new FileInputStream(downloadFile);
 
