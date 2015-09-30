@@ -54,7 +54,7 @@ public class PrototypingPanel extends Composite {
     final private PrototypingModel model;
     private List<PrototypeLane> prototypeLaneList;
     private TabPanel tabPanel;
-    private TextBox tooltipBox;
+
     /**
      * Режим подсказок пользователю с проходом по всем колонкам. Осуществляется 1 раз при запуске приложения.
      */
@@ -64,7 +64,11 @@ public class PrototypingPanel extends Composite {
      * Заголовок панели
      */
     private String title;
-
+    /**
+     * Кнопка для пропуска/
+     */
+    private Button tooltipHelpButton;
+    private Label tooltipLabel;
 
     /**
      * @param model модель компонента {@link PrototypingModel}
@@ -101,7 +105,7 @@ public class PrototypingPanel extends Composite {
              */
             prototypeLaneList.get(outputColumn).deselectLane();
             prototypeLaneList.get(outputColumn + 1).selectLane();
-            tooltipBox.setText(model.getColumnTooltip(outputColumn + 1));
+            tooltipLabel.setText(model.getColumnTooltip(outputColumn + 1));
             if (outputColumn < model.getColumnsCount()) {
                 changeItemHandler(outputColumn++);
             } else {
@@ -114,11 +118,15 @@ public class PrototypingPanel extends Composite {
     private void initComponents(ClickHandler tooltipClickHandler, ChangeHandler tooltipChangeHandler) {
         VerticalPanel settingsPanel = new VerticalPanel();
         settingsPanel.setStyleName(PANEL_CSS_CLASS);
-        tooltipBox = new TextBox();
-        tooltipBox.setText(this.model.getColumnTooltip(0));
-        tooltipBox.setReadOnly(true);
-        tooltipBox.setStyleName(TOOLTIP_CSS_CLASS);
-        settingsPanel.add(tooltipBox);
+        HorizontalPanel tooltipPane = new HorizontalPanel();
+        tooltipPane.setStyleName("tooltipPane");
+        tooltipLabel = new Label();
+        tooltipLabel.setStyleName("labeltooltip");
+        tooltipLabel.setText(this.model.getColumnTooltip(0));
+        tooltipPane.add(tooltipLabel);
+        tooltipHelpButton = new Button("Пропустить");
+        tooltipPane.add(tooltipHelpButton);
+        settingsPanel.add(tooltipPane);
         Label label = new Label(title);
         label.setStyleName("labeldesc");
         settingsPanel.add(label);
