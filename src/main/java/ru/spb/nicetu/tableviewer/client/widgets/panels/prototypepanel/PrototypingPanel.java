@@ -34,7 +34,6 @@ public class PrototypingPanel extends Composite {
      */
     public static final String TABLE_CSS_CLASS = ".excelDefaults";
     public static final String PANEL_CSS_CLASS = "gwt-PrototypingPanel";
-    public static final String TOOLTIP_CSS_CLASS = "gwt-TextBox";
     /**
      * Компонент задающий диапазон строк , которые будут входить в выходную таблицу
      */
