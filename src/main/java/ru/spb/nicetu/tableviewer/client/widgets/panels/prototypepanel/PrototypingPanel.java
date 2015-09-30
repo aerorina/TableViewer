@@ -1,6 +1,8 @@
 package ru.spb.nicetu.tableviewer.client.widgets.panels.prototypepanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.query.client.Function;
@@ -73,34 +75,44 @@ public class PrototypingPanel extends Composite {
         this.title = title;
         this.saveButton = createSaveButton(true);
 
-        ClickHandler tooltipModeHandler = new ClickHandler() {
+        ClickHandler tooltipClickHandler= new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
-                if (tooltipMode) {
-                    /**
-                     * Проверка, что все чек-боксы для столбца этой записи в таблице заполнены пользователем.
-                     */
-                    /**
-                     * Переход на выбор следующего столбца и замена подсказки.
-                     */
-                    prototypeLaneList.get(outputColumn).getModel().setColumnChecked(false);
-                    prototypeLaneList.get(outputColumn + 1).getModel().setColumnChecked(true);
-                    tooltipBox.setText(model.getColumnTooltip(outputColumn + 1));
-                    if (outputColumn < model.getColumnsCount()) {
-                        changeItemHandler(outputColumn++);
-                    } else {
-                        tooltipMode = false;
-                    }
-
-                }
+                changeTooltips();
+            }
+        };
+        ChangeHandler tooltipChangeHandler = new ChangeHandler() {
+            public void onChange(ChangeEvent event) {
+                changeTooltips();
             }
         };
 
-        initComponents(tooltipModeHandler);
-        initTableListeners(tooltipModeHandler);
+        initComponents(tooltipClickHandler, tooltipChangeHandler);
+        initTableListeners();
     }
 
-    private void initComponents(ClickHandler tooltipModeHandler) {
+    private void changeTooltips() {
+        if (tooltipMode) {
+            /**
+             * Проверка, что все чек-боксы для столбца этой записи в таблице заполнены пользователем.
+             */
+            /**
+             * Переход на выбор следующего столбца и замена подсказки.
+             */
+            prototypeLaneList.get(outputColumn).getModel().setColumnChecked(false);
+            prototypeLaneList.get(outputColumn + 1).getModel().setColumnChecked(true);
+            tooltipBox.setText(model.getColumnTooltip(outputColumn + 1));
+            if (outputColumn < model.getColumnsCount()) {
+                outputColumn++;
+                changeItemHandler(outputColumn);
+            } else {
+                tooltipMode = false;
+            }
+
+        }
+    }
+
+    private void initComponents(ClickHandler tooltipClickHandler, ChangeHandler tooltipChangeHandler) {
         VerticalPanel settingsPanel = new VerticalPanel();
         settingsPanel.setStyleName(PANEL_CSS_CLASS);
         tooltipBox = new TextBox();
@@ -115,7 +127,7 @@ public class PrototypingPanel extends Composite {
         prototypeLaneList = new ArrayList<PrototypeLane>();
         for (int i = 0; i < model.getColumnsCount(); i++) {
             final PrototypeLaneModel prototypeLaneModel = new PrototypeLaneModel(this.model.getColumnName(i), i == 0, inputTableColumnCount);
-            PrototypeLane prototypeLane = new PrototypeLane(prototypeLaneModel, tooltipModeHandler);
+            PrototypeLane prototypeLane = new PrototypeLane(prototypeLaneModel, tooltipClickHandler, tooltipChangeHandler);
             final int index = i;
             prototypeLane.setListener(new LaneChangeListener() {
                 @Override
@@ -370,8 +382,8 @@ public class PrototypingPanel extends Composite {
     /**
      * Иницилизация слушателей для строк и столбцов таблицы
      */
-    private void initTableListeners(ClickHandler tooltipModeHandler) {
-        initColumnHeaderListeners(tooltipModeHandler);
+    private void initTableListeners() {
+        initColumnHeaderListeners();
         initRowHeaderListener();
     }
 
@@ -424,7 +436,7 @@ public class PrototypingPanel extends Composite {
     /**
      * Иницилизация слушателей для столбцов таблицы
      */
-    private void initColumnHeaderListeners(final ClickHandler tooltipHandler) {
+    private void initColumnHeaderListeners() {
         $(TABLE_CSS_CLASS + " th").click(new Function() {
             @Override
             public boolean f(Event e) {
@@ -435,13 +447,13 @@ public class PrototypingPanel extends Composite {
                 return true;
             }
         });
-//        $(TABLE_CSS_CLASS + " th").click(new Function() {
-//            @Override
-//            public boolean f(Event e) {
-//                tooltipHandler.notify();
-//                return true;
-//            }
-//        });
+        $(TABLE_CSS_CLASS + " th").click(new Function() {
+            @Override
+            public boolean f(Event e) {
+                changeTooltips();
+                return true;
+            }
+        });
     }
 
     /**

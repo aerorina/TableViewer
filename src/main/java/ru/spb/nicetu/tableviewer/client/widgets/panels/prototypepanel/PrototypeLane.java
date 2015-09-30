@@ -63,10 +63,10 @@ public class PrototypeLane extends Composite {
     private PushButton addBtn;
     private RadioButton radioButton;
 
-    public PrototypeLane(PrototypeLaneModel model, ClickHandler tooltipModeHandler) {
+    public PrototypeLane(PrototypeLaneModel model, ClickHandler tooltipClickHandler, ChangeHandler tooltipChangeHandler) {
         this.model = model;
 
-        initComponents(tooltipModeHandler);
+        initComponents(tooltipClickHandler, tooltipChangeHandler);
         initListeners();
         model.setCurrentIndexToLast();
     }
@@ -98,7 +98,7 @@ public class PrototypeLane extends Composite {
     /**
      * Иницилизация компонентов
      */
-    private void initComponents(ClickHandler tooltipModeHandler) {
+    private void initComponents(ClickHandler tooltipClickHandler, ChangeHandler tooltipChangeHandler) {
         FocusPanel focusPanel = new FocusPanel();
         HorizontalPanel lane = new HorizontalPanel();
         HorizontalPanel columnLane = new HorizontalPanel();
@@ -112,7 +112,7 @@ public class PrototypeLane extends Composite {
                 selectLane();
             }
         });
-        final ListBox listBox = createListBox(tooltipModeHandler);
+        final ListBox listBox = createListBox(tooltipChangeHandler);
 
         listBoxPanel.add(listBox);
         focusPanel.add(radioButton);
@@ -127,9 +127,9 @@ public class PrototypeLane extends Composite {
         columnLane.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         columnLane.add(listBoxPanel);
         lane.add(columnLane);
-        addBtn = createAddBtn(tooltipModeHandler);
+        addBtn = createAddBtn(tooltipChangeHandler);
         lane.add(addBtn);
-        delBtn = createDelBtn(tooltipModeHandler);
+        delBtn = createDelBtn(tooltipClickHandler);
         lane.add(delBtn);
         initWidget(lane);
     }
@@ -139,7 +139,7 @@ public class PrototypeLane extends Composite {
      *
      * @return список выбора колонок
      */
-    private ListBox createListBox(ClickHandler tooltipModeHandler) {
+    private ListBox createListBox(ChangeHandler tooltipChangeHandler) {
         final ListBox listBox = new ListBox();
         final int listBoxIndex = listBoxes.size();
         listBox.addChangeHandler(new ChangeHandler() {
@@ -147,7 +147,7 @@ public class PrototypeLane extends Composite {
                 selectColumn(listBox.getSelectedIndex(),listBoxIndex);
             }
         });
-        listBox.addClickHandler(tooltipModeHandler);
+        listBox.addChangeHandler(tooltipChangeHandler);
 
         fillListBox(listBox, model.getInputColumnCount());
         listBoxes.add(listBox);
@@ -161,7 +161,7 @@ public class PrototypeLane extends Composite {
      *
      * @return кнопку добавления
      */
-    private PushButton createAddBtn(final ClickHandler tooltipModeHandler) {
+    private PushButton createAddBtn(final ChangeHandler tooltipChangeHandler) {
         Image imgAdd = new Image(Resources.INSTANCE.imgAdd());
         imgAdd.setPixelSize(24, 24);
         final PushButton button = new PushButton(imgAdd);
@@ -184,7 +184,7 @@ public class PrototypeLane extends Composite {
             @Override
             public void onClick(ClickEvent clickEvent) {
 
-                listBoxPanel.add(createListBox(tooltipModeHandler));
+                listBoxPanel.add(createListBox(tooltipChangeHandler));
                 delBtn.setEnabled(true);
                 setOpacity(delBtn, 0.3);
                 model.getIndices().add(0);
