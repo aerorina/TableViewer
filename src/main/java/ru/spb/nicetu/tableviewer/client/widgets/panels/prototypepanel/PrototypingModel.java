@@ -17,6 +17,10 @@ public class PrototypingModel {
      */
     private final List<String> columnsNames;
     /**
+     * Список с подсказками к колонкам выходной таблицы
+     */
+    private final List<String> columnsTooltips;
+    /**
      * Индекс строки, с которой начинается выводимый диапазон
      */
     private int startRow;
@@ -26,12 +30,18 @@ public class PrototypingModel {
     private int endRow;
 
     /**
-     * @param columns массив имен колонок
+     * @param columnsNames массив имен колонок
+     * @param tooltips массив подсказок к колонкам
      */
-    public PrototypingModel(String[] columns) {
-        columnsNames = new ArrayList<String>();
-        for (String column : columns) {
-            columnsNames.add(column);
+    public PrototypingModel(String[] columnsNames, String[] tooltips) {
+        this.columnsNames = new ArrayList<String>();
+        for (String column : columnsNames) {
+            this.columnsNames.add(column);
+        }
+
+        columnsTooltips = new ArrayList<String>();
+        for (String column : tooltips) {
+            columnsTooltips.add(column);
         }
     }
 
@@ -72,6 +82,15 @@ public class PrototypingModel {
      */
     public String getColumnName(int index){
         return columnsNames.get(index);
+    }
+
+    /**
+     * Возвращает подсказку к колонке по индексу
+     * @param index индекс колонки
+     * @return подсказка к колонке
+     */
+    public String getColumnTooltip(int index){
+        return columnsTooltips.get(index);
     }
 
     /**

@@ -57,6 +57,11 @@ public class TableViewer implements EntryPoint {
     final TextBox fileNameBox = new TextBox();
     public static final String[] COLUMN_NAMES = new String[]{"Наименование","Дата начала","Дата окончания","Время начала","Время окончания",
     "Продолжительность (час)","Отвественное подразделение (наименование)","Ответственное лицо (ФИО)","Примечание"};
+    public static final String[] COLUMN_TOOLTIPS = new String[]{"Выберите колонку с наименованием операций",
+            "Выберите колонку с датами проведения операций", "Выберите колонку с датами проведения операций",
+            "Выберите колонку с временами проведения операций", "Выберите колонку с временами проведения операций",
+            "Выберите колонку с продолжительностью операций", "Выберите колонку с ответственным подразделением",
+            "Выберите колонку с ответственным лицом", "Выберите колонку с примечанием"};
     private HorizontalPanel mainPanel;
     private PrototypingPanel prototypingPanel;
 
@@ -167,7 +172,8 @@ public class TableViewer implements EntryPoint {
                     tableHTML.setHTML(result);
                     tabPanel.selectTab(0);
                     tabPanel.setVisible(true);
-                    prototypingPanel = new PrototypingPanel(new PrototypingModel(COLUMN_NAMES), tabPanel,"Укажите столбцы с данными для загрузки");
+                    prototypingPanel = new PrototypingPanel(new PrototypingModel(COLUMN_NAMES, COLUMN_TOOLTIPS),
+                            tabPanel,"Укажите столбцы с данными для загрузки");
                     mainPanel.add(prototypingPanel);
                 }
             }

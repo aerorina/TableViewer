@@ -8,14 +8,7 @@ import com.google.gwt.query.client.GQuery;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import ru.spb.nicetu.tableviewer.client.ExportTableService;
 import ru.spb.nicetu.tableviewer.client.widgets.GTextRange;
@@ -39,6 +32,7 @@ public class PrototypingPanel extends Composite {
      */
     public static final String TABLE_CSS_CLASS = ".excelDefaults";
     public static final String PANEL_CSS_CLASS = "gwt-PrototypingPanel";
+    public static final String TOOLTIP_CSS_CLASS = "gwt-TextBox";
     /**
      * Компонент задающий диапазон строк , которые будут входить в выходную таблицу
      */
@@ -58,6 +52,11 @@ public class PrototypingPanel extends Composite {
     final private PrototypingModel model;
     private List<PrototypeLane> prototypeLaneList;
     private TabPanel tabPanel;
+    private TextBox tooltipBox;
+    /**
+     * Режим подсказок пользователю с проходом по всем колонкам. Осуществляется 1 раз при запуске приложения.
+     */
+    private boolean tooltipMode = true;
     final private Button saveButton;
     /**
      * Заголовок панели
@@ -81,6 +80,11 @@ public class PrototypingPanel extends Composite {
     private void initComponents() {
         VerticalPanel settingsPanel = new VerticalPanel();
         settingsPanel.setStyleName(PANEL_CSS_CLASS);
+        tooltipBox = new TextBox();
+        tooltipBox.setText(this.model.getColumnTooltip(0));
+        tooltipBox.setReadOnly(true);
+        tooltipBox.setStyleName(TOOLTIP_CSS_CLASS);
+        settingsPanel.add(tooltipBox);
         Label label = new Label(title);
         label.setStyleName("labeldesc");
         settingsPanel.add(label);
@@ -418,6 +422,15 @@ public class PrototypingPanel extends Composite {
     private void changeItemHandler(int index) {
         outputColumn = index;
         highlightColumns();
+        if (tooltipMode) {
+            prototypeLaneList.get(index).getModel().setColumnChecked(false);
+            prototypeLaneList.get(index + 1).getModel().setColumnChecked(true);
+            tooltipBox.setText(model.getColumnTooltip(index + 1));
+            changeItemHandler(index++);
+            if (index + 1 == model.getColumnsCount()) {
+                tooltipMode = false;
+            }
+        }
     }
 
     /**
