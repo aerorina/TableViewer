@@ -63,10 +63,10 @@ public class PrototypeLane extends Composite {
     private PushButton addBtn;
     private RadioButton radioButton;
 
-    public PrototypeLane(PrototypeLaneModel model) {
+    public PrototypeLane(PrototypeLaneModel model, ClickHandler tooltipModeHandler) {
         this.model = model;
 
-        initComponents();
+        initComponents(tooltipModeHandler);
         initListeners();
         model.setCurrentIndexToLast();
     }
@@ -98,7 +98,7 @@ public class PrototypeLane extends Composite {
     /**
      * Иницилизация компонентов
      */
-    private void initComponents() {
+    private void initComponents(ClickHandler tooltipModeHandler) {
         FocusPanel focusPanel = new FocusPanel();
         HorizontalPanel lane = new HorizontalPanel();
         HorizontalPanel columnLane = new HorizontalPanel();
@@ -112,7 +112,7 @@ public class PrototypeLane extends Composite {
                 selectLane();
             }
         });
-        final ListBox listBox = createListBox();
+        final ListBox listBox = createListBox(tooltipModeHandler);
 
         listBoxPanel.add(listBox);
         focusPanel.add(radioButton);
@@ -127,9 +127,9 @@ public class PrototypeLane extends Composite {
         columnLane.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         columnLane.add(listBoxPanel);
         lane.add(columnLane);
-        addBtn = createAddBtn();
+        addBtn = createAddBtn(tooltipModeHandler);
         lane.add(addBtn);
-        delBtn = createDelBtn();
+        delBtn = createDelBtn(tooltipModeHandler);
         lane.add(delBtn);
         initWidget(lane);
     }
@@ -139,7 +139,7 @@ public class PrototypeLane extends Composite {
      *
      * @return список выбора колонок
      */
-    private ListBox createListBox() {
+    private ListBox createListBox(ClickHandler tooltipModeHandler) {
         final ListBox listBox = new ListBox();
         final int listBoxIndex = listBoxes.size();
         listBox.addChangeHandler(new ChangeHandler() {
@@ -147,6 +147,7 @@ public class PrototypeLane extends Composite {
                 selectColumn(listBox.getSelectedIndex(),listBoxIndex);
             }
         });
+        listBox.addClickHandler(tooltipModeHandler);
 
         fillListBox(listBox, model.getInputColumnCount());
         listBoxes.add(listBox);
@@ -160,7 +161,7 @@ public class PrototypeLane extends Composite {
      *
      * @return кнопку добавления
      */
-    private PushButton createAddBtn() {
+    private PushButton createAddBtn(final ClickHandler tooltipModeHandler) {
         Image imgAdd = new Image(Resources.INSTANCE.imgAdd());
         imgAdd.setPixelSize(24, 24);
         final PushButton button = new PushButton(imgAdd);
@@ -183,7 +184,7 @@ public class PrototypeLane extends Composite {
             @Override
             public void onClick(ClickEvent clickEvent) {
 
-                listBoxPanel.add(createListBox());
+                listBoxPanel.add(createListBox(tooltipModeHandler));
                 delBtn.setEnabled(true);
                 setOpacity(delBtn, 0.3);
                 model.getIndices().add(0);
@@ -215,7 +216,7 @@ public class PrototypeLane extends Composite {
      *
      * @return кнопка удаления
      */
-    private PushButton createDelBtn() {
+    private PushButton createDelBtn(ClickHandler tooltipModeHandler) {
         Image imgDel = new Image(Resources.INSTANCE.imgDel());
         imgDel.setPixelSize(24, 24);
         final PushButton button = new PushButton(imgDel);
@@ -252,6 +253,7 @@ public class PrototypeLane extends Composite {
                 }
             }
         });
+        button.addClickHandler(tooltipModeHandler);
         return button;
     }
 
