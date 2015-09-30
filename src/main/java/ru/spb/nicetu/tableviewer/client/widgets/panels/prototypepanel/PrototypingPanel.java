@@ -96,6 +96,14 @@ public class PrototypingPanel extends Composite {
             /**
              * Проверка, что все чек-боксы для столбца этой записи в таблице заполнены пользователем.
              */
+            List<Integer> indices = prototypeLaneList.get(outputColumn).getModel().getIndices();
+            boolean canGoFurther = true;
+            for (int i = 0; i < indices.size(); i++) {
+                canGoFurther &= indices.get(i) != 0; // в каждом чек-боксе выбран заголовок
+            }
+            if (!canGoFurther) {
+                return;
+            }
             /**
              * Переход на выбор следующего столбца и замена подсказки.
              */
