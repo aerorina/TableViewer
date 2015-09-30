@@ -14,7 +14,7 @@
 }
 .gwt-PrototypingPanel .labeldesc{
     font-weight: bold;
-    padding: 5px;
+    padding: 0 5px 5px 5px;
     background: #00d2ff;
     color: #3a3a4d;
     margin-bottom: 5px;
@@ -28,14 +28,7 @@
     background: #e2f6ff;
 }
 
-.gwt-PrototypingPanel .gwt-TextBox {
-    width: 600px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
-    color: green;
-    background-color: yellow;
-}
+
 
 .gwt-PrototypingPanel .columnLane{
     width: 600px;
@@ -169,4 +162,36 @@
     background-color: #878787;
     border-bottom: 2px solid #87ffff;
     margin-right: 2px;
+}
+
+.tooltipPane{
+    height: 20px;
+    padding: 0 0 0 0;
+
+}
+
+.tooltipPane .labeltooltip{
+    width: 648px;
+    height: 20px;
+    border-radius: 0;
+    color: #000000;
+    background-color: yellow;
+}
+.tooltipPane .gwt-Button{
+    height: 20px;
+    border: solid 1px black;
+    margin: 0;
+    border-radius: 0;
+    color: green;
+    padding: 0;
+    background-color: yellow;
+}
+.tooltipPane .gwt-Button:hover{
+    height: 20px;
+    border: solid 1px black;
+    border-radius: 0;
+    margin:0px
+    padding: 0;
+    color: green;
+    background-color: #b2dded;
 }
