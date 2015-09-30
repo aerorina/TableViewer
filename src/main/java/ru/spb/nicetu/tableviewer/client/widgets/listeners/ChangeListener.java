@@ -10,4 +10,5 @@ public interface ChangeListener {
      * Значение компонента изменилось
      **/
     void onChanged();
+
 }

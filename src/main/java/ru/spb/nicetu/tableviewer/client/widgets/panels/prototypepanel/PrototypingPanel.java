@@ -99,12 +99,11 @@ public class PrototypingPanel extends Composite {
             /**
              * Переход на выбор следующего столбца и замена подсказки.
              */
-            prototypeLaneList.get(outputColumn).getModel().setColumnChecked(false);
-            prototypeLaneList.get(outputColumn + 1).getModel().setColumnChecked(true);
+            prototypeLaneList.get(outputColumn).deselectLane();
+            prototypeLaneList.get(outputColumn + 1).selectLane();
             tooltipBox.setText(model.getColumnTooltip(outputColumn + 1));
             if (outputColumn < model.getColumnsCount()) {
-                outputColumn++;
-                changeItemHandler(outputColumn);
+                changeItemHandler(outputColumn++);
             } else {
                 tooltipMode = false;
             }

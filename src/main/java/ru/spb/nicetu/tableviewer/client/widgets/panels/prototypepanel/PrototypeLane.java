@@ -260,12 +260,19 @@ public class PrototypeLane extends Composite {
     /**
      * Активировать данную строку
      */
-    private void selectLane() {
+    public void selectLane() {
         radioButton.setValue(true);
         model.setColumnChecked(true);
         listener.laneSelected();
     }
+    /**
+     * Снять выбор с линии
+     */
+    public void deselectLane() {
+        radioButton.setValue(false);
+        model.setColumnChecked(false);
 
+    }
     /**
      * Заполняет listBox со значениями от A до A+#количество столбцов в таблице , также добавляя пустое значение
      *
@@ -333,4 +340,6 @@ public class PrototypeLane extends Composite {
     public PrototypeLaneModel getModel() {
         return model;
     }
+
+
 }
