@@ -191,6 +191,9 @@
 .tooltipPane .gwt-Button:hover{
     background-color: #00d1ff;
 }
+.tooltipPane .gwt-Button[disabled]{
+    background-color: #878787;
+}
 
 .gwt-CheckBox{
     margin-top: 5px;
