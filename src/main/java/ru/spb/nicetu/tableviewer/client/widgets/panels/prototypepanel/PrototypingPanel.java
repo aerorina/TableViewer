@@ -99,7 +99,7 @@ public class PrototypingPanel extends Composite {
         settingsPanel.setStyleName(PANEL_CSS_CLASS);
         HorizontalPanel tooltipPane = new HorizontalPanel();
         tooltipPane.setStyleName("tooltipPane");
-        CheckBox helperCheckBox = new CheckBox("Режим помощи");
+        CheckBox helperCheckBox = new CheckBox("");
         helperCheckBox.setValue(helperMode);
         helperCheckBox.addClickHandler(new ClickHandler() {
             @Override
@@ -174,7 +174,6 @@ public class PrototypingPanel extends Composite {
 
         prototypeLaneList.get(currentIndex).deselectLane();
         prototypeLaneList.get(nextIndex).selectLane();
-        tooltipLabel.setText(model.getColumnTooltip(nextIndex));
     }
 
     /**
@@ -506,6 +505,7 @@ public class PrototypingPanel extends Composite {
      */
     private void changeItemHandler(int index) {
         outputColumn = index;
+        tooltipLabel.setText(model.getColumnTooltip(outputColumn));
         highlightColumns();
     }
 

@@ -171,7 +171,7 @@
 }
 
 .tooltipPane .labeltooltip{
-    width: 480px;
+    width: 550px;
     height: 30px;
     border-radius: 0;
     color: #000000;
@@ -193,6 +193,6 @@
 }
 
 .gwt-CheckBox{
-    background-color: #e2f6ff;
-    width: 100px;
+    margin-top: 5px;
+    margin-left: 5px;
 }
