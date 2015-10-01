@@ -94,50 +94,21 @@ public class PrototypingPanel extends Composite {
         initTableListeners();
     }
 
-    /**
-     * Проверка, что все чек-боксы для столбца этой записи в таблице заполнены пользователем.
-     */
-    private boolean allCheckboxesSelected() {
-        List<Integer> indices = prototypeLaneList.get(outputColumn).getModel().getIndices();
-        boolean canGoFurther = true;
-        for (int i = 0; i < indices.size(); i++) {
-            canGoFurther &= indices.get(i) != 0; // в каждом чек-боксе выбран заголовок
-        }
-        return canGoFurther;
-    }
-
-    /**
-     * Переход на выбор следующего столбца и замена подсказки.
-     */
-    private void nextStepInHelperMode() {
-        int currentIndex = outputColumn;
-        int nextIndex = 0;
-        if (outputColumn < model.getColumnsCount() - 1) {
-            nextIndex = outputColumn + 1;
-        }
-
-        prototypeLaneList.get(currentIndex).deselectLane();
-        prototypeLaneList.get(nextIndex).selectLane();
-        tooltipLabel.setText(model.getColumnTooltip(nextIndex));
-    }
-
-    /**
-     * Обработка выбора столбца пользователем в режиме помощи.
-     */
-    private void handleColumnSelection() {
-        if (helperMode) {
-            if (!allCheckboxesSelected()) {
-                return;
-            }
-            nextStepInHelperMode();
-        }
-    }
-
     private void initComponents(ClickHandler tooltipClickHandler, ChangeHandler tooltipChangeHandler) {
         VerticalPanel settingsPanel = new VerticalPanel();
         settingsPanel.setStyleName(PANEL_CSS_CLASS);
         HorizontalPanel tooltipPane = new HorizontalPanel();
         tooltipPane.setStyleName("tooltipPane");
+        CheckBox helperCheckBox = new CheckBox("Режим помощи");
+        helperCheckBox.setValue(helperMode);
+        helperCheckBox.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                helperMode = !helperMode;
+                tooltipHelpButton.setEnabled(helperMode);
+            }
+        });
+        tooltipPane.add(helperCheckBox);
         tooltipLabel = new Label();
         tooltipLabel.setStyleName("labeltooltip");
         tooltipLabel.setText(this.model.getColumnTooltip(0));
@@ -177,6 +148,45 @@ public class PrototypingPanel extends Composite {
         settingsPanel.add(createPerformButton());
 
         initWidget(settingsPanel);
+    }
+
+    /**
+     * Проверка, что все чек-боксы для столбца этой записи в таблице заполнены пользователем.
+     */
+    private boolean allCheckboxesSelected() {
+        List<Integer> indices = prototypeLaneList.get(outputColumn).getModel().getIndices();
+        boolean canGoFurther = true;
+        for (int i = 0; i < indices.size(); i++) {
+            canGoFurther &= indices.get(i) != 0; // в каждом чек-боксе выбран заголовок
+        }
+        return canGoFurther;
+    }
+
+    /**
+     * Переход на выбор следующего столбца и замена подсказки.
+     */
+    private void nextStepInHelperMode() {
+        int currentIndex = outputColumn;
+        int nextIndex = 0;
+        if (outputColumn < model.getColumnsCount() - 1) {
+            nextIndex = outputColumn + 1;
+        }
+
+        prototypeLaneList.get(currentIndex).deselectLane();
+        prototypeLaneList.get(nextIndex).selectLane();
+        tooltipLabel.setText(model.getColumnTooltip(nextIndex));
+    }
+
+    /**
+     * Обработка выбора столбца пользователем в режиме помощи.
+     */
+    private void handleColumnSelection() {
+        if (helperMode) {
+            if (!allCheckboxesSelected()) {
+                return;
+            }
+            nextStepInHelperMode();
+        }
     }
 
     /**
