@@ -57,7 +57,7 @@ public class PrototypingPanel extends Composite {
     /**
      * Режим подсказок пользователю с проходом по всем колонкам. Осуществляется 1 раз при запуске приложения.
      */
-    private boolean tooltipMode = true;
+    private boolean helperMode = true;
     final private Button saveButton;
     /**
      * Заголовок панели
@@ -81,12 +81,12 @@ public class PrototypingPanel extends Composite {
         ClickHandler tooltipClickHandler= new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
-                changeTooltips();
+                handleColumnSelection();
             }
         };
         ChangeHandler tooltipChangeHandler = new ChangeHandler() {
             public void onChange(ChangeEvent event) {
-                changeTooltips();
+                handleColumnSelection();
             }
         };
 
@@ -94,31 +94,41 @@ public class PrototypingPanel extends Composite {
         initTableListeners();
     }
 
-    private void changeTooltips() {
-        if (tooltipMode) {
-            /**
-             * Проверка, что все чек-боксы для столбца этой записи в таблице заполнены пользователем.
-             */
-            List<Integer> indices = prototypeLaneList.get(outputColumn).getModel().getIndices();
-            boolean canGoFurther = true;
-            for (int i = 0; i < indices.size(); i++) {
-                canGoFurther &= indices.get(i) != 0; // в каждом чек-боксе выбран заголовок
-            }
-            if (!canGoFurther) {
+    /**
+     * Проверка, что все чек-боксы для столбца этой записи в таблице заполнены пользователем.
+     */
+    private boolean allCheckboxesSelected() {
+        List<Integer> indices = prototypeLaneList.get(outputColumn).getModel().getIndices();
+        boolean canGoFurther = true;
+        for (int i = 0; i < indices.size(); i++) {
+            canGoFurther &= indices.get(i) != 0; // в каждом чек-боксе выбран заголовок
+        }
+        return canGoFurther;
+    }
+
+    /**
+     * Переход на выбор следующего столбца и замена подсказки.
+     */
+    private void nextStepInHelperMode() {
+        prototypeLaneList.get(outputColumn).deselectLane();
+        prototypeLaneList.get(outputColumn + 1).selectLane();
+        tooltipLabel.setText(model.getColumnTooltip(outputColumn + 1));
+        if (outputColumn < model.getColumnsCount()) {
+            changeItemHandler(outputColumn++);
+        } else {
+            helperMode = false;
+        }
+    }
+
+    /**
+     * Обработка выбора столбца пользователем в режиме помощи.
+     */
+    private void handleColumnSelection() {
+        if (helperMode) {
+            if (!allCheckboxesSelected()) {
                 return;
             }
-            /**
-             * Переход на выбор следующего столбца и замена подсказки.
-             */
-            prototypeLaneList.get(outputColumn).deselectLane();
-            prototypeLaneList.get(outputColumn + 1).selectLane();
-            tooltipLabel.setText(model.getColumnTooltip(outputColumn + 1));
-            if (outputColumn < model.getColumnsCount()) {
-                changeItemHandler(outputColumn++);
-            } else {
-                tooltipMode = false;
-            }
-
+            nextStepInHelperMode();
         }
     }
 
@@ -132,6 +142,14 @@ public class PrototypingPanel extends Composite {
         tooltipLabel.setText(this.model.getColumnTooltip(0));
         tooltipPane.add(tooltipLabel);
         tooltipHelpButton = new Button("Пропустить");
+        tooltipHelpButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                if (helperMode) {
+                    nextStepInHelperMode();
+                }
+            }
+        });
         tooltipPane.add(tooltipHelpButton);
         settingsPanel.add(tooltipPane);
         Label label = new Label(title);
@@ -464,7 +482,7 @@ public class PrototypingPanel extends Composite {
         $(TABLE_CSS_CLASS + " th").click(new Function() {
             @Override
             public boolean f(Event e) {
-                changeTooltips();
+                handleColumnSelection();
                 return true;
             }
         });
