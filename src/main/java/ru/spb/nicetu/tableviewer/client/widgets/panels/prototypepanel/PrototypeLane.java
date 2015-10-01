@@ -190,7 +190,9 @@ public class PrototypeLane extends Composite {
                 model.getIndices().add(0);
                 radioButton.setValue(true);
                 model.setColumnChecked(true);
-                model.setCurrentIndexToLast();
+                if(model.getIndices().get(model.getIndices().size() - 2) != 0){
+                    model.setCurrentIndexToLast();
+                }
                 selectLane();
                 if (listBoxes.size() == MAX_LIST_BOX_COUNT - 1) {
                     button.setEnabled(false);
