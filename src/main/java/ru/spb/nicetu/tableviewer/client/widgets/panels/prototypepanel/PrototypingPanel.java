@@ -110,14 +110,15 @@ public class PrototypingPanel extends Composite {
      * Переход на выбор следующего столбца и замена подсказки.
      */
     private void nextStepInHelperMode() {
-        prototypeLaneList.get(outputColumn).deselectLane();
-        prototypeLaneList.get(outputColumn + 1).selectLane();
-        tooltipLabel.setText(model.getColumnTooltip(outputColumn + 1));
-        if (outputColumn < model.getColumnsCount()) {
-            changeItemHandler(outputColumn++);
-        } else {
-            helperMode = false;
+        int currentIndex = outputColumn;
+        int nextIndex = 0;
+        if (outputColumn < model.getColumnsCount() - 1) {
+            nextIndex = outputColumn + 1;
         }
+
+        prototypeLaneList.get(currentIndex).deselectLane();
+        prototypeLaneList.get(nextIndex).selectLane();
+        tooltipLabel.setText(model.getColumnTooltip(nextIndex));
     }
 
     /**
